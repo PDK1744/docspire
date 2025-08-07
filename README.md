@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📘 DocSpire
 
-## Getting Started
+**Modern, Secure Documentation for Everyone.**
 
-First, run the development server:
+DocSpire is a clean, user-friendly documentation platform built for teams and individuals who need a better way to manage internal knowledge, SOPs, and shared content. Think of it as your personal or company wiki — but faster, simpler, and built for the modern web.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> 🚧 **Note:** This project is still in active development and not live yet — stay tuned for the official launch!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## ✨ Features (Planned & In Progress)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 🛡️ Secure team-based document spaces
+- 📝 Rich text editor (Notion-style) powered by [EditorJS](https://https://editorjs.io//)
+- 👥 Multi-user support with role-based permissions
+- 🧭 Intuitive navigation, document hierarchy, & audit logs.
+- 🌙 Clean, modern UI with dark mode
+- 📁 Company-based document hubs
+- 📤 Easy invite & onboarding system for team members
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Layer       | Technology                     |
+|-------------|--------------------------------|
+| **Frontend** | Next.js + TailwindCSS          |
+| **Editor**   | EditorJS     |
+| **Auth & DB**| Supabase (PostgreSQL)    |
+| **Icons**    | Lucide React                   |
+| **UI Kit**   | Shadcn/UI                      |
+| **Deployment** | Coming soon  |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚀 Project Status
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+DocSpire is under **active development**. I'm working hard to ship a minimal viable product (MVP) in the next few weeks.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+---
+
+## 📌 License
+
+This project might be released under an open source license in the future (TBD).
