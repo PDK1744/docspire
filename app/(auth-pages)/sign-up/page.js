@@ -4,15 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { BookOpen, Building2 } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { signUpAction } from "@/app/actions";
-import { useState } from "react";
+
 
 export default function SignUpPage() {
-  const [signUpType, setSignUpType] = useState("create");
-  const [showCompanyField, setShowCompanyField] = useState(true);
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
@@ -25,50 +23,13 @@ export default function SignUpPage() {
             </div>
           </div>
           <CardTitle className="text-2xl text-center">Create an account</CardTitle>
-          <CardDescription className="text-center">
-            Choose how you want to join DocSpire
+          <CardDescription className="text-center text-gray-600 dark:text-gray-400">
+            Sign up to get started with DocSpire.  If joining a company, you will require a company code for the next step.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form action={signUpAction} className="space-y-6">
-            <RadioGroup
-              defaultValue="create"
-              onValueChange={(value) => {
-                setSignUpType(value);
-                setShowCompanyField(value === "create");
-              }}
-              className="gap-4"
-            >
-              <div className="flex items-center space-x-2 space-y-0">
-                <RadioGroupItem value="create" id="create" />
-                <Label
-                  htmlFor="create"
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <Building2 className="h-4 w-4" />
-                  <div>
-                    <div className="font-medium">Create a Company Space</div>
-                    <p className="text-sm text-gray-500">
-                      Start fresh with your own documentation hub
-                    </p>
-                  </div>
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2 space-y-0">
-                <RadioGroupItem value="join" id="join" />
-                <Label
-                  htmlFor="join"
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <div>
-                    <div className="font-medium">Join an Existing Company</div>
-                    <p className="text-sm text-gray-500">
-                      You&apos;ll need an invitation from your company admin
-                    </p>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
+
 
             <div className="space-y-4">
               <div className="space-y-2">
@@ -83,18 +44,7 @@ export default function SignUpPage() {
                 />
               </div>
 
-              {showCompanyField && (
-                <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name</Label>
-                  <Input
-                    id="companyName"
-                    name="companyName"
-                    type="text"
-                    placeholder="Acme Inc."
-                    required={signUpType === "create"}
-                  />
-                </div>
-              )}
+
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -117,25 +67,18 @@ export default function SignUpPage() {
                   autoComplete="new-password"
                 />
               </div>
-
-              <input type="hidden" name="signUpType" value={signUpType} />
-              
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                {signUpType === "create" ? "Create Company Space" : "Create Account"}
-              </Button>
-
-              {signUpType === "join" && (
-                <p className="text-sm text-gray-500 text-center mt-2">
-                  Note: You'll need to be invited by your company admin to access the platform
-                </p>
-              )}
             </div>
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+              Create Account
+            </Button>
+
+
           </form>
         </CardContent>
         <CardFooter className="text-sm text-center">
           <div className="text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <Link 
+            <Link
               href="/sign-in"
               className="text-blue-600 hover:text-blue-700 dark:text-blue-500 font-medium"
             >

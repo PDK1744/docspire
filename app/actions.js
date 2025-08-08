@@ -9,113 +9,38 @@ export const signUpAction = async (formData) => {
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
     const confirmPassword = formData.get("confirmPassword")?.toString();
-    const signUpType = formData.get("signUpType")?.toString();
-    const companyName = formData.get("companyName")?.toString();
     const supabase = await createClient();
-    
 
     if (!email || !password || !confirmPassword) {
-        return encodedRedirect(
-            "error",
-            "/sign-up",
-            "Email and password are required",
-        );
+        return encodedRedirect("error", "/sign-up", "All fields are required.");
     }
 
     if (password !== confirmPassword) {
-        return encodedRedirect(
-            "error",
-            "/sign-up",
-            "Passwords do not match",
-        );
-    }
-
-    // If user is trying to join without creating a company, stop here
-    if (signUpType === "join") {
-        return encodedRedirect(
-            "info",
-            "/sign-in",
-            "Please ask your company admin for an invitation before creating an account.",
-        );
-    }
-
-    // Validate company name for creation
-    if (!companyName) {
-        return encodedRedirect(
-            "error",
-            "/sign-up",
-            "Company name is required when creating a new company.",
-        );
+        return encodedRedirect("error", "/sign-up", "Passwords do not match.");
     }
 
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        // options: {
-        //     emailRedirectTo: `${origin}/auth/callback`,
-        // },
     });
 
     if (error) {
-        console.error(error.code + " ", error.message)
+        console.error(error);
         return encodedRedirect("error", "/sign-up", error.message);
-    } else if (data?.user?.identities?.length === 0) {
-        return encodedRedirect(
-            "error",
-            "/sign-in",
-            "Email already registered. Please sign in.",
-        )
-    } else {
-        // Only proceed with company creation since we've validated signUpType above
-            // Create the company
-            const { data: company, error: companyError } = await supabase
-                .from('companies')
-                .insert([
-                    { name: companyName, owner_id: data.user.id }
-                ])
-                .select()
-                .single();
+    }
 
-            if (companyError) {
-                return encodedRedirect(
-                    "error",
-                    "/sign-up",
-                    "Failed to create company. Please try again.",
-                );
-            }
+    if (data?.user?.identities?.length === 0) {
+        return encodedRedirect("error", "/sign-in", "Email already registered.");
+    }
 
-            // Add user as admin of the company
-            const { error: memberError } = await supabase
-                .from('company_members')
-                .insert([
-                    { 
-                        company_id: company.id,
-                        user_id: data.user.id,
-                        role: 'admin'
-                    }
-                ]);
-
-            if (memberError) {
-                return encodedRedirect(
-                    "error",
-                    "/sign-up",
-                    "Failed to set up company access. Please contact support.",
-                );
-            }
-        }
-
-        return encodedRedirect(
-            "success",
-            "/dashboard",
-            "Thanks for signing up! Your company space is ready."
-        );
-    };
+    return encodedRedirect("success", "/sign-in", "Welcome! Please Login to get started!");
+};
 
 export const signInAction = async (formData) => {
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
     const supabase = await createClient();
-    
+
     const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -125,6 +50,22 @@ export const signInAction = async (formData) => {
     if (error) {
         return encodedRedirect("error", "/sign-in", error.message);
 
+    }
+
+    // After successful sign-in, get the user session
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Check if the user exists and has a company_id in the company_members table
+    const { data: companyMember, error: companyError } = await supabase
+        .from('company_members')
+        .select('company_id')
+        .eq('user_id', user.id)
+        .single();
+
+    if (companyError || !companyMember) {
+        // User is not part of a company or an error occurred, redirect them to a different path
+        console.error("User not part of a company or an error occurred:", companyError);
+        return redirect("/onboarding"); // Redirect to a path for users without a company
     }
     return redirect("/dashboard")
 };
@@ -189,7 +130,7 @@ export const resetPasswordAction = async (formData) => {
         )
     }
 
-    const { error} = await supabase.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({
         password
     });
 
@@ -211,4 +152,53 @@ export const signOutAction = async () => {
     const supabase = await createClient()
     await supabase.auth.signOut();
     return redirect("/");
+}
+
+export const createCompanyAction = async (formData) => {
+    const companyName = formData.get("companyName")?.toString();
+    const supabase = await createClient();
+
+    if (!companyName) {
+        return encodedRedirect("error", "/onboarding", "Company name is required.");
+    }
+
+    
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+        console.log(userError);
+        return encodedRedirect("error", "/onboarding", "You must be logged in to create a company.");
+    }
+
+    console.log("USER: ", user);
+
+    
+    const { data: company, error: companyError } = await supabase
+        .from("companies")
+        .insert([
+            { name: companyName, owner_id: user.id }
+        ])
+        .select()
+        .single();
+
+    if (companyError) {
+        console.log(companyError);
+        return encodedRedirect("error", "/onboarding", "Failed to create company. Please try again.");
+    }
+
+    
+    const { error: memberError } = await supabase
+        .from("company_members")
+        .insert([
+            { company_id: company.id, user_id: user.id, role: 'admin' }
+        ]);
+
+    if (memberError) {
+        return encodedRedirect(
+            "error",
+            "/onboarding",
+            "Failed to add you as a member. Please try again."
+        );
+    }
+
+    return encodedRedirect("success", "/dashboard", "Company created successfully!");
 }
