@@ -7,14 +7,17 @@ import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { signInAction } from "@/app/actions";
+import StatusMessage from "@/components/status-message";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-3">
-          <div className="flex justify-center">
-            <div className="flex items-center gap-2">
+    <>
+      
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-3">
+            <div className="flex justify-center">
+              <div className="flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-blue-600" />
               <Link href="/" className="text-xl font-bold">DocSpire</Link>
             </div>
@@ -23,6 +26,7 @@ export default function SignInPage() {
           <CardDescription className="text-center">
             Enter your email and password to sign in to your account
           </CardDescription>
+          <StatusMessage />
         </CardHeader>
         <CardContent>
           <form action={signInAction} className="space-y-4">
@@ -71,5 +75,6 @@ export default function SignInPage() {
         </CardFooter>
       </Card>
     </div>
+    </>
   );
 }

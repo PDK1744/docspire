@@ -169,7 +169,7 @@ export const createCompanyAction = async (formData) => {
         return encodedRedirect("error", "/onboarding", "You must be logged in to create a company.");
     }
 
-    console.log("USER: ", user);
+    
 
     
     const { data: company, error: companyError } = await supabase
@@ -181,7 +181,6 @@ export const createCompanyAction = async (formData) => {
         .single();
 
     if (companyError) {
-        console.log(companyError);
         return encodedRedirect("error", "/onboarding", "Failed to create company. Please try again.");
     }
 

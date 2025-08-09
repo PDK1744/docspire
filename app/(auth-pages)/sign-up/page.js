@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { signUpAction } from "@/app/actions";
+import StatusMessage from "@/components/status-message";
 
 
 export default function SignUpPage() {
@@ -26,6 +27,7 @@ export default function SignUpPage() {
           <CardDescription className="text-center text-gray-600 dark:text-gray-400">
             Sign up to get started with DocSpire.  If joining a company, you will require a company code for the next step.
           </CardDescription>
+          <StatusMessage />
         </CardHeader>
         <CardContent>
           <form action={signUpAction} className="space-y-6">
