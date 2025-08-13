@@ -5,16 +5,54 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DashboardHeader } from "@/components/dashboard-header";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 
-const navigation = [
-  { name: "Documents", href: "/dashboard", icon: Files },
-  { name: "Team", href: "/dashboard/team", icon: Users },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-];
+
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
+  const [companyId, setCompanyId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCompanyId() {
+      const supabase = createClient();
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data: membership, error: membershipError } = await supabase
+        .from("company_members")
+        .select("company_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (membershipError || !membership) {
+        setLoading(false);
+        return;
+      }
+
+      setCompanyId(membership.company_id);
+      setLoading(false);
+    }
+
+    fetchCompanyId();
+  }, []);
+
+  if (loading) {
+    return <div className="skeleton h-6 w-40" />
+  }
+
+  const navigation = [
+  { name: "Documents", href: "/dashboard", icon: Files },
+  { name: "Team", href: "/dashboard/team", icon: Users },
+  { name: "Settings", href: `/dashboard/settings/${companyId}`, icon: Settings },
+];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

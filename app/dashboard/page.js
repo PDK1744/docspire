@@ -106,7 +106,7 @@ export default function DashboardPage() {
       .select("company_id")
       .eq("user_id", userData.user.id)
       .single();
-    console.log('Company data:', companyData);
+    
     if (companyError) {
       console.error('Company error:', companyError);
       return;
