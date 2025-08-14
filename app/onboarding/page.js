@@ -14,14 +14,41 @@ import { createClient } from '@/utils/supabase/client'
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [choice, setChoice] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const router = useRouter()
-//   const supabase = createClient()
+  //   const supabase = createClient()
 
-//   const handleCreateCompany = async (formData) => {
-//     await createCompanyAction(formData)
-//   }
+  const handleJoinCompany = async (code) => {
+    setLoading(true);
+    setError(null);
 
-    
+    try {
+      const res = await fetch("/api/company/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ code })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to join company");
+      }
+      const data = await res.json();
+      router.push('/dashboard');
+
+    } catch (err) {
+      console.error(err);
+      setError("An error occurred while joining the company.");
+    } finally {
+      setLoading(false);
+    }
+
+  }
+
+
 
   const handleNext = () => {
     setStep(2)
@@ -46,8 +73,8 @@ export default function OnboardingPage() {
             {step === 1
               ? 'Are you creating a new company or joining an existing one?'
               : choice === 'create'
-              ? 'Give your company a name to get started.'
-              : 'Enter your company’s invite code to join.'}
+                ? 'Give your company a name to get started.'
+                : 'Enter your company’s invite code to join.'}
           </CardDescription>
         </CardHeader>
 
@@ -88,12 +115,11 @@ export default function OnboardingPage() {
 
           {step === 2 && choice === 'join' && (
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault()
                 const formData = new FormData(e.target)
-                const code = formData.get('companyCode')
-                // TODO: join company logic here
-                router.push('/dashboard')
+                const code = formData.get('companyCode').toUpperCase();
+                await handleJoinCompany(code);
               }}
               className="space-y-3"
             >
@@ -101,11 +127,14 @@ export default function OnboardingPage() {
               <Input
                 id="companyCode"
                 name="companyCode"
-                onChange={(e) => (e.target.value = e.target.value.toUpperCase())}
+                onChange={(e) => (e.target.value = e.target.value)}
                 required
               />
+              {error && (
+                <p className='text-red-600 text-sm mt-1'>{error}</p>
+              )}
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Join Company
+                {loading ? "Joining..." : "Join Company"}
               </Button>
             </form>
           )}

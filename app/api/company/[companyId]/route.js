@@ -22,7 +22,7 @@ export async function GET(request, { params}) {
     .eq('user_id', user.id)
     .eq('company_id', companyId)
     .single()
-    console.log(membership);
+    
 
     if (membershipError || !membership) {
         return new Response(JSON.stringify({error: 'Forbidden'}), {status: 403})
