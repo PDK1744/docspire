@@ -4,11 +4,11 @@ import { createClient } from "@/utils/supabase/server";
 export default async function OnboardingLayout({ children }) {
     const supabase = await createClient();
     const {
-        data: { session },
+        data: { user },
         error
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getUser();
 
-    if (error || !session) {
+    if (error || !user) {
         redirect("/sign-in");
     }
 

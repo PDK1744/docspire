@@ -9,6 +9,7 @@ export default async function SettingsPage({ params }) {
     const companyId = id
 
     const { data: {user}, } = await supabase.auth.getUser()
+    
 
     if (!user) {
         return <div>Please sign in to access settings.</div>
@@ -30,13 +31,12 @@ export default async function SettingsPage({ params }) {
     
     const role = membership.role
 
-    // TODO add onSave for settings here? or in components????
-
+    
 
     return (
         <div className=''>
-            <ProfileSettings user={user} />
-            {role === "admin" && <CompanySettings companyId={companyId} />}
+            <ProfileSettings  />
+            {role === "admin" && <CompanySettings companyId={companyId}  />}
         </div>
     );
 }

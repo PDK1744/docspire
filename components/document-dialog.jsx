@@ -68,7 +68,7 @@ export function DocumentDialog({ isOpen, onClose, onSubmit, collections = [], de
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!title.trim()}>
+            <Button type="submit" variant="defaultGreen" disabled={!title.trim()}>
               Create Document
             </Button>
           </DialogFooter>

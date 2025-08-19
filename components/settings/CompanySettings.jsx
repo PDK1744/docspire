@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Copy } from "lucide-react"
 
 
-export default function CompanySettings({ companyId }) {
+export default function CompanySettings({ companyId, onSave}) {
   const [companyName, setCompanyName] = useState("")
   const [joinCode, setJoinCode] = useState("")
   const [joinCodeExpiration, setJoinCodeExpiration] = useState(null)
@@ -63,11 +63,15 @@ export default function CompanySettings({ companyId }) {
   }
 
   // TODO: Handle updating Company detials/settings. Don't forget to add onSubmit to form
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({ companyName });
+  }
 
   return (
     <div className="space-y-4 p-6">
       <h2 className="text-xl font-semibold">Company Settings</h2>
-      <form className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="companyName" className="mb-2">Company Name</Label>
           {/* // TODO: Save Company Settings*/}

@@ -36,7 +36,7 @@ export default function OnboardingPage() {
         const errData = await res.json();
         throw new Error(errData.error || "Failed to join company");
       }
-      const data = await res.json();
+      // const data = await res.json();
       router.push('/dashboard');
 
     } catch (err) {

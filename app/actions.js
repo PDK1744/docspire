@@ -6,12 +6,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const signUpAction = async (formData) => {
+    const name = formData.get("name")?.toString();
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
     const confirmPassword = formData.get("confirmPassword")?.toString();
     const supabase = await createClient();
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !name) {
         return encodedRedirect("error", "/sign-up", "All fields are required.");
     }
 
@@ -22,6 +23,11 @@ export const signUpAction = async (formData) => {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+            data: {
+                display_name: name,
+            }
+        }
     });
 
     if (error) {
