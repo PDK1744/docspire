@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-export async function GET(request) {
+export async function GET(request, { params }) {
     const supabase = await createClient();
+    const { companyId } = await params
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -10,17 +11,18 @@ export async function GET(request) {
     const { data: documents, error: documentsError } = await supabase
         .from("documents")
         .select("*")
-        .eq("company_id", request.company_id);
+        .eq("company_id", companyId);
 
-        if (documentsError) {
+    if (documentsError) {
+        console.log(documentsError)
         return NextResponse.json({ error: documentsError.message }, { status: 500 });
-        }
-        if (!documents || documents.length === 0) {
+    }
+    if (!documents || documents.length === 0) {
         return NextResponse.json({ error: "No documents found" }, { status: 404 });
-        }
-        if (documents) {
+    }
+    if (documents) {
         return NextResponse.json(documents, { status: 200 });
-        }
+    }
 }
 
 export async function DELETE(request) {

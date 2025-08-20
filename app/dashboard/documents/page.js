@@ -1,14 +1,29 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { File, Trash2 } from "lucide-react"
-import { useState } from "react"
 import { createClient } from "@/utils/supabase/client"
 
 export default function DocumentsPage() {
-    cosnt [documents, setDocuments] = useState([])
     const supabase = createClient()
+    const { data: user, error: userError } = supabase.auth.getUser()
+    const { data: membership, error: membershipError } = supabase
+        .from("company_members")
+        .select("company_id")
+        .eq("user_id", user?.id)
+        .single()
+    
+    const fetchDocuments = async (membership.company_id) => {
+        const res = await fetch("/api/documents", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+        })
+    }
     
 
   return (

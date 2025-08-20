@@ -1,11 +1,11 @@
 "use client";
-
+import { ReactQueryProvider } from "@/components/providers/providers";
 import { BookOpen, Files, Settings, Users, Blocks } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 
@@ -50,12 +50,13 @@ export default function DashboardLayout({ children }) {
 
   const navigation = [
   { name: "Collections", href: "/dashboard", icon: Blocks },
-  { name: "Documents", href: "/dashboard/documents", icon: Files },
-  { name: "Team", href: "/dashboard/team", icon: Users },
+  { name: "Documents", href: `/dashboard/docs/${companyId}`, icon: Files },
+  { name: "Team", href: `/dashboard/team/${companyId}`, icon: Users },
   { name: "Settings", href: `/dashboard/settings/${companyId}`, icon: Settings },
 ];
 
   return (
+    <ReactQueryProvider>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
       <div className="fixed inset-y-0 flex w-64 flex-col">
@@ -113,5 +114,6 @@ export default function DashboardLayout({ children }) {
         </main>
       </div>
     </div>
+    </ReactQueryProvider>
   );
 }

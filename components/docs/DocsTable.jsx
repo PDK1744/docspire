@@ -1,0 +1,95 @@
+"use client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { File, Trash2 } from "lucide-react"
+import { createClient } from "@/utils/supabase/client"
+import { useQuery } from "@tanstack/react-query"
+
+export default function DocumentsPage({ companyId }) {
+    
+    
+    console.log(companyId)
+
+    const fetchDocuments = async (companyId) => {
+        const res = await fetch(`/api/docs/${companyId}`)
+        if (!res.ok) {
+            throw new Error('Failed to fetch documents')
+        }
+        return res.json()
+    }
+
+    const { data: documents, isLoading, error } = useQuery({
+        queryKey: ["documents", companyId],
+        queryFn: () => fetchDocuments(companyId),
+        enabled: !!companyId,
+    })
+
+
+
+
+    return (
+        <div className="p-6 space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold">All Documents</h1>
+                <p className="text-gray-500 dark:text-gray-400">
+                    Browse all documents in your company across collections.
+                </p>
+            </div>
+
+            {/* Search bar */}
+            <div className="flex gap-2 max-w-md">
+                <Input placeholder="Search documents..." />
+                <Button>Search</Button>
+            </div>
+
+            {/* Loading & error states */}
+            {isLoading && <p>Loading documents...</p>}
+            {error && <p className="text-red-600">Error fetching documents</p>}
+
+            {/* Documents table */}
+            {documents && (
+                <Card>
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[40%]">Title</TableHead>
+                                    <TableHead>Collection</TableHead>
+                                    <TableHead>Owner</TableHead>
+                                    <TableHead>Last Updated</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {documents.map((doc) => (
+                                    <TableRow key={doc.id}>
+                                        <TableCell className="flex items-center gap-2">
+                                            <File className="h-4 w-4 text-gray-400" />
+                                            <span className="font-medium text-blue-600 hover:underline cursor-pointer">
+                                                {doc.title}
+                                            </span>
+                                        </TableCell>
+                                        <TableCell>{doc.collection}</TableCell>
+                                        <TableCell>{doc.owner}</TableCell>
+                                        <TableCell>{doc.updatedAt}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-600 hover:text-red-700"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    )
+}
