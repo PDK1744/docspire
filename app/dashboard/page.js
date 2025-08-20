@@ -238,6 +238,15 @@ export default function DashboardPage() {
     }
   };
 
+  // const handleDeleteDocument = async (id) => {
+  //   try {
+      
+  //   } catch (error) {
+  //     console.error('Error deleting document:', error);
+  //     return;
+  //   }
+  // }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

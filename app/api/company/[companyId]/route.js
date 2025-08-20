@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
-export async function GET(request, { params}) {
+export async function GET({ params }) {
     const { companyId } = await params;
     
     const supabase = await createClient()
