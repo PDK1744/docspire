@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Files, Settings, Users } from "lucide-react";
+import { BookOpen, Files, Settings, Users, Blocks } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -49,7 +49,8 @@ export default function DashboardLayout({ children }) {
   }
 
   const navigation = [
-  { name: "Documents", href: "/dashboard", icon: Files },
+  { name: "Collections", href: "/dashboard", icon: Blocks },
+  { name: "Documents", href: "/dashboard/documents", icon: Files },
   { name: "Team", href: "/dashboard/team", icon: Users },
   { name: "Settings", href: `/dashboard/settings/${companyId}`, icon: Settings },
 ];
