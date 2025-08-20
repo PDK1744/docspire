@@ -5,18 +5,54 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Copy } from "lucide-react"
+import { createClient } from "@/utils/supabase/client"
 
 
-export default function CompanySettings({ companyId, onSave}) {
+export default function CompanySettings({ companyId }) {
+  const [user, setUser] = useState(null)
   const [companyName, setCompanyName] = useState("")
   const [joinCode, setJoinCode] = useState("")
   const [joinCodeExpiration, setJoinCodeExpiration] = useState(null)
+  const [joinLoading, setjoinLoading] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState("")
+  const supabase = createClient()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess("");
+    
+
+    try {
+      const res = await fetch("/api/settings/company", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({ companyName })
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        console.error("Error updating company:", errData);
+        
+      }
+      setSuccess("Company updated successfully!");
+    } catch (err) {
+      console.error("Error updating company:", err.message);
+      setError("An error occurred while updating company.");
+    } finally {
+      setLoading(false);
+
+    }
+  }
 
   useEffect(() => {
     async function fetchJoinCode() {
-      setLoading(true);
+      setjoinLoading(true);
       setError(null);
       try {
         const res = await fetch(`/api/company/${companyId}`, {
@@ -31,14 +67,14 @@ export default function CompanySettings({ companyId, onSave}) {
       } catch (err) {
         setError(err.message);
       } finally {
-        setLoading(false);
+        setjoinLoading(false);
       }
     }
     if (companyId) fetchJoinCode();
   }, [companyId]);
 
   async function generateJoinCode() {
-    setLoading(true);
+    setjoinLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/company/join-code", {
@@ -50,11 +86,33 @@ export default function CompanySettings({ companyId, onSave}) {
       }
       const data = await res.json();
       setJoinCode(data.joinCode);
+      setJoinCodeExpiration(data.joinCodeExpiresAt || null);
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setjoinLoading(false);
     }
+  }
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success])
+
+  useEffect(() => {
+    const verifyUser = async () => {
+      const { data, error } = await supabase.auth.getUser()
+      if (!error && data?.user) {
+        setUser(data.user)
+      }
+    }
+    verifyUser()
+  }, [supabase])
+
+  if (!user) {
+    return <div className="p-6">Loading...</div>
   }
 
   const formatExpireDate = (dateString) => {
@@ -62,11 +120,7 @@ export default function CompanySettings({ companyId, onSave}) {
     return date.toLocaleString();
   }
 
-  // TODO: Handle updating Company detials/settings. Don't forget to add onSubmit to form
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave({ companyName });
-  }
+  
 
   return (
     <div className="space-y-4 p-6">
@@ -77,13 +131,15 @@ export default function CompanySettings({ companyId, onSave}) {
           {/* // TODO: Save Company Settings*/}
           <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
         </div>
-        <Button variant="defaultGreen" type="submit">Save</Button>
+        <Button variant="defaultGreen" type="submit">{loading ? "Saving..." : "Save"}</Button>
+        {error && <p className="text-red-500">{error}</p>}
+        {success && <p className="text-green-500">{success}</p>}
       </form>
 
       <div className="pt-4 border-t">
         <h3 className="text-lg font-medium">Invite New Members</h3>
-        <Button variant="defaultGreen" onClick={generateJoinCode} disabled={loading}>
-          {loading ? "Waiting..." : "Generate Join Code"}
+        <Button variant="defaultGreen" onClick={generateJoinCode} disabled={joinLoading}>
+          {joinLoading ? "Waiting..." : "Generate Join Code"}
         </Button>
         {joinCode && (
           <div className="mt-2 p-2 border-2 border-blue-200 rounded flex items-center gap-2">

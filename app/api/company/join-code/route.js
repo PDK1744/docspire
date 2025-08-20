@@ -22,14 +22,16 @@ export async function POST() {
     
     const code = crypto.randomBytes(4).toString("hex").toUpperCase();
 
-    const { error: updateError } = await supabase
+    const { data, error: updateError } = await supabase
         .from("companies")
         .update({ join_code: code, join_code_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) }) // 30 days. TODO: Shorten this for production. Also make it configurable.
-        .eq("id", membership.company_id);
+        .eq("id", membership.company_id)
+        .select()
+        .single();
     
     if (updateError) {
         return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
 
-    return NextResponse.json({ joinCode: code }, { status: 200 });
+    return NextResponse.json({ joinCode: code, joinCodeExpiresAt: data.join_code_expires_at }, { status: 200 });
 }

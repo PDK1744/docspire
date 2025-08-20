@@ -14,7 +14,7 @@ export async function POST(request) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
     const { userName, userEmail } = await request.json();
-    console.log("Updating profile for user:", user.id, "with name:", userName, "and email:", userEmail);
+    
 
     const { error } = await supabase.auth.updateUser({
         email: userEmail,
