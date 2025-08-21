@@ -10,7 +10,14 @@ export async function GET(request, { params }) {
     }
     const { data: documents, error: documentsError } = await supabase
         .from("documents")
-        .select("*")
+        .select(`
+            id,
+            title,
+            created_at,
+            updated_at,
+            last_updated_by,
+            document_collections (name)
+            `)
         .eq("company_id", companyId);
 
     if (documentsError) {
@@ -60,4 +67,5 @@ export async function DELETE(request) {
     if (deleteError) {
         return NextResponse.json({ error: 'Failed to delete document' }, { status: 500 });
     }
+    return NextResponse.json({ message: 'Document deleted successfully' }, { status: 200 });
 }

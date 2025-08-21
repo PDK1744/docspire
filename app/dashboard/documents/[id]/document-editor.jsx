@@ -52,12 +52,23 @@ export default function DocumentEditor({ documentId }) {
 
       const plainText = extractPlainText(content);
 
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        toast({
+          variant: "destructive",
+          title: "Unauthorized",
+          description: "You must be logged in to save documents."
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from("documents")
         .update({
           content: content,
           plain_text: plainText,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          last_updated_by: user.user_metadata.display_name
         })
         .eq("id", documentId);
 

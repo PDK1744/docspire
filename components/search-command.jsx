@@ -1,9 +1,9 @@
 "use client";
-
-import { useState, useCallback } from "react";
-import { Search, File, Layout } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, File } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import {
   Command,
   CommandDialog,
@@ -14,83 +14,51 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { DialogTitle } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 
-export function SearchCommand() {
+export function SearchCommand({ companyId }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [submittedTerm, setSubmittedTerm] = useState("");
   const router = useRouter();
-  const supabase = createClient();
 
-  const runSearch = useCallback(async (searchQuery) => {
-    if (!searchQuery || searchQuery.trim().length === 0) {
-      setDocuments([]);
-      return;
+  // React Query fetch function
+  const fetchDocuments = async (query) => {
+    if (!query || query.trim().length === 0) return [];
+    const res = await fetch(
+      `/api/docs/${companyId}/search?query=${encodeURIComponent(query)}`
+    );
+    if (!res.ok) throw new Error("Search request failed");
+    const documents = await res.json();
+    return documents;
+  };
+
+  const { data: documents = [], isLoading, isError } = useQuery({
+    queryKey: ["documents", companyId, submittedTerm],
+    queryFn: () => fetchDocuments(submittedTerm),
+    enabled: submittedTerm.length > 0,
+    staleTime: 0, // Ensure fresh data
+    gcTime: 0, // Previously cacheTime, disable caching
+  });
+
+  const handleInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setSubmittedTerm(searchTerm);
+      // Remove the manual refetch call since query will auto-refetch when submittedTerm changes
     }
-
-    setLoading(true);
-    try {
-      // Get user's company first
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) return;
-
-      const { data: companyData } = await supabase
-        .from("company_members")
-        .select("company_id")
-        .eq("user_id", userData.user.id)
-        .single();
-
-      if (!companyData?.company_id) return;
-
-      // Search documents with content
-      const query = searchQuery.trim();
-      
-      const { data: docs, error } = await supabase
-        .from("documents")
-        .select(`
-          id,
-          title,
-          document_collections (
-            name
-          )
-        `)
-        .eq("company_id", companyData.company_id)
-        .textSearch('title', `${query}`)
-        .order("updated_at", { ascending: false })
-        .limit(10);
-
-      if (error) {
-        console.error("Search error:", error);
-        return;
-      }
-
-      setDocuments(docs || []);
-    } catch (error) {
-      console.error("Error searching:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [supabase]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    runSearch(query);
   };
 
   const handleSelect = (item) => {
     setIsOpen(false);
-    
-    if ('title' in item) {
-      // It's a document
-      router.push(`/dashboard/documents/${item.id}`);
-    } else {
-      // It's a collection - you might want to implement collection navigation
-      // For now, we'll just close the dialog
-      setIsOpen(false);
-    }
+    router.push(`/dashboard/documents/${item.id}`);
   };
+
+  // Reset search when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchTerm("");
+      setSubmittedTerm("");
+    }
+  }, [isOpen]);
 
   return (
     <>
@@ -101,51 +69,57 @@ export function SearchCommand() {
         <Search className="h-4 w-4 text-gray-500" />
         <span className="flex-1 text-left">Search documents...</span>
       </button>
+
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
         <div className="sr-only">
-          <DialogTitle>Search Documents and Collections</DialogTitle>
+          <DialogTitle>Search Documents</DialogTitle>
         </div>
-        <CommandInput
-          placeholder="Type words to search and press Enter..."
-          value={query}
-          onValueChange={setQuery}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              runSearch(query);
-            }
-          }}
-        />
-        <CommandList>
-          <CommandEmpty>Type some words and press Enter to search</CommandEmpty>
-          {loading ? (
-            <div className="py-6 text-center text-sm">Searching...</div>
-          ) : (
-            <>
-              {documents.length > 0 && (
-                <CommandGroup>
-                  {documents.map((document) => (
-                    <CommandItem
-                      key={document.id}
-                      onSelect={() => handleSelect(document)}
-                      className="flex items-center gap-x-2"
+        <Command key={`${submittedTerm}-${documents.length}-${isLoading}`}>
+          <CommandInput
+            placeholder="Press Enter to search..."
+            value={searchTerm}
+            onValueChange={setSearchTerm}
+            onKeyDown={handleInputKeyDown}
+          />
+          <CommandList>
+          <CommandEmpty>
+            {isLoading
+              ? "Searching..."
+              : submittedTerm.length === 0
+                ? "Type some words to search"
+                : !isLoading && submittedTerm.length > 0 && documents.length === 0
+                  ? "No results found"
+                  : null}
+          </CommandEmpty>
+          {!isLoading && documents.length > 0 && (
+            <CommandGroup>
+              {documents.map((doc) => (
+                <div key={doc.id} className="relative">
+                  <CommandItem className="opacity-100">
+                    <Link 
+                      href={`/dashboard/documents/${doc.id}`}
+                      className="flex items-center gap-x-2 w-full text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer absolute inset-0 px-2 py-1.5 z-10"
+                      onClick={() => setIsOpen(false)}
                     >
-                      <File className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <div className="font-medium">{document.title}</div>
-                        {document.document_collections?.name && (
-                          <div className="text-xs text-gray-500">
-                            in {document.document_collections.name}
+                      <File className="h-4 w-4 text-muted-foreground" />
+                      <div className="flex-1">
+                        <div className="font-medium text-blue-600 hover:text-blue-800">
+                          {doc.title}
+                        </div>
+                        {doc.collection_name && (
+                          <div className="text-xs text-muted-foreground">
+                            in {doc.collection_name}
                           </div>
                         )}
                       </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              )}
-            </>
+                    </Link>
+                  </CommandItem>
+                </div>
+              ))}
+            </CommandGroup>
           )}
-        </CommandList>
+                  </CommandList>
+        </Command>
       </CommandDialog>
     </>
   );

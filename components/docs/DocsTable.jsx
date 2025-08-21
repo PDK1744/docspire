@@ -1,16 +1,18 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-import { File, Trash2 } from "lucide-react"
+import { File, Trash2, Pencil } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
 import { useQuery } from "@tanstack/react-query"
+import { SearchCommand } from "../search-command"
 
 export default function DocumentsPage({ companyId }) {
     
     
-    console.log(companyId)
+    
 
     const fetchDocuments = async (companyId) => {
         const res = await fetch(`/api/docs/${companyId}`)
@@ -26,6 +28,11 @@ export default function DocumentsPage({ companyId }) {
         enabled: !!companyId,
     })
 
+    const formatExpireDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  }
+
 
 
 
@@ -40,8 +47,9 @@ export default function DocumentsPage({ companyId }) {
 
             {/* Search bar */}
             <div className="flex gap-2 max-w-md">
-                <Input placeholder="Search documents..." />
-                <Button>Search</Button>
+                {/* <Input placeholder="Search documents..." />
+                <Button>Search</Button> */}
+                <SearchCommand companyId={companyId}/>
             </div>
 
             {/* Loading & error states */}
@@ -57,8 +65,9 @@ export default function DocumentsPage({ companyId }) {
                                 <TableRow>
                                     <TableHead className="w-[40%]">Title</TableHead>
                                     <TableHead>Collection</TableHead>
-                                    <TableHead>Owner</TableHead>
+                                    {/* <TableHead>Created By</TableHead> */}
                                     <TableHead>Last Updated</TableHead>
+                                    <TableHead>Last Updated By</TableHead>
                                     <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -67,13 +76,16 @@ export default function DocumentsPage({ companyId }) {
                                     <TableRow key={doc.id}>
                                         <TableCell className="flex items-center gap-2">
                                             <File className="h-4 w-4 text-gray-400" />
+                                            <Link href={`/dashboard/documents/${doc.id}`}>
                                             <span className="font-medium text-blue-600 hover:underline cursor-pointer">
                                                 {doc.title}
                                             </span>
+                                            </Link>
                                         </TableCell>
-                                        <TableCell>{doc.collection}</TableCell>
-                                        <TableCell>{doc.owner}</TableCell>
-                                        <TableCell>{doc.updatedAt}</TableCell>
+                                        <TableCell>{doc.document_collections.name}</TableCell>
+                                        {/* <TableCell>{doc.owner}</TableCell> */}
+                                        <TableCell>{formatExpireDate(doc.updated_at)}</TableCell>
+                                        <TableCell>{doc.last_updated_by}</TableCell>
                                         <TableCell className="text-right">
                                             <Button
                                                 variant="ghost"
@@ -81,6 +93,13 @@ export default function DocumentsPage({ companyId }) {
                                                 className="text-red-600 hover:text-red-700"
                                             >
                                                 <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-gray-600 hover:text-blue-700"
+                                            >
+                                                <Pencil className="h-4 w-4" />
                                             </Button>
                                         </TableCell>
                                     </TableRow>
