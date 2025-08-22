@@ -55,6 +55,8 @@ export default function DocumentsPage({ companyId }) {
             {/* Loading & error states */}
             {isLoading && <p>Loading documents...</p>}
             {error && <p className="text-red-600">Error fetching documents</p>}
+            {!isLoading && documents.length === 0 && (
+                <p>No documents found. Start by creating a new document!</p>)}
 
             {/* Documents table */}
             {documents && (
@@ -82,7 +84,7 @@ export default function DocumentsPage({ companyId }) {
                                             </span>
                                             </Link>
                                         </TableCell>
-                                        <TableCell>{doc.document_collections.name}</TableCell>
+                                        <TableCell>{!doc.document_collections.name ? 'N/A' : doc.document_collections.name}</TableCell>
                                         {/* <TableCell>{doc.owner}</TableCell> */}
                                         <TableCell>{formatExpireDate(doc.updated_at)}</TableCell>
                                         <TableCell>{doc.last_updated_by}</TableCell>

@@ -29,6 +29,9 @@ export function SearchCommand({ companyId }) {
     );
     if (!res.ok) throw new Error("Search request failed");
     const documents = await res.json();
+    if (!documents || !Array.isArray(documents)) {
+      return [];
+    }
     return documents;
   };
 

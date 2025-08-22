@@ -150,7 +150,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleCreateDocument = async (formData) => {
+  const handleCreateDocument = async (formData, collectionName) => {
     try {
       // Get current user
       const { data: userData } = await supabase.auth.getUser();

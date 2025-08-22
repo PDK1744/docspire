@@ -12,9 +12,11 @@ import {
 import { LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SearchCommand } from "@/components/search-command";
+import { set } from "zod";
 
 export function DashboardHeader() {
   const [companyName, setCompanyName] = useState("");
+  const [company_id, setCompanyId] = useState("");
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const supabase = createClient();
@@ -32,6 +34,7 @@ export function DashboardHeader() {
             companies (
               name
             ),
+            company_id,
             role
           `)
           .eq("user_id", userData.user.id)
@@ -40,6 +43,7 @@ export function DashboardHeader() {
         if (companyData?.companies) {
           setCompanyName(companyData.companies.name);
           setIsAdmin(companyData.role === 'admin');
+          setCompanyId(companyData.company_id);
         }
       } catch (error) {
         console.error("Error loading company info:", error);
@@ -79,7 +83,7 @@ export function DashboardHeader() {
         </h1>
       </div>
       <div className="flex-1 flex items-center justify-center px-4">
-        <SearchCommand />
+        <SearchCommand companyId={company_id}/>
       </div>
       <div>
         <DropdownMenu>

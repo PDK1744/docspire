@@ -25,7 +25,7 @@ export async function GET(request, { params }) {
         return NextResponse.json({ error: documentsError.message }, { status: 500 });
     }
     if (!documents || documents.length === 0) {
-        return NextResponse.json({ error: "No documents found" }, { status: 404 });
+        return NextResponse.json(documents, { status: 200 });
     }
     if (documents) {
         return NextResponse.json(documents, { status: 200 });
