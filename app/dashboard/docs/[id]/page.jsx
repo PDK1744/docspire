@@ -3,6 +3,7 @@ import DocsTable from '@/components/docs/DocsTable'
 
 
 export default async function DocumentsPage({ params }) {
+    
     const { id: companyId } = await params
     
 
