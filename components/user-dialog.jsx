@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -16,31 +17,69 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function UserDialog({ isOpen, onClose, user }) {
+export function UserDialog({ isOpen, onClose, user, companyId }) {
+    const queryClient = useQueryClient();
+
     const { id, display_name, email, role, status } = user || {};
+    const [userId, setUserId] = useState(id || "");
     const [name, setName] = useState(display_name || "");
-    const [userRole, setUserRole] = useState(role || "n/a");
-    const [userStatus, setUserStatus] = useState(status || "n/a");
-    const [userEmail, setUserEmail] = useState(email || "");
+    const [userRole, setUserRole] = useState(role || "");
+    const [userStatus, setUserStatus] = useState(status || "");
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState("");
 
     const roles = [
         { id: 'admin', name: 'Admin' },
-        { id: 'member', name: 'Member' }]
+        { id: 'member', name: 'Member' }
+    ];
 
     const statuses = [
         { id: 'active', name: 'Active' },
-        { id: 'disabled', name: 'Disabled' }]
+        { id: 'disabled', name: 'Disabled' }
+    ];
 
+    const updateUserMutation = useMutation({
+        mutationFn: async (userData) => {
+            const response = await fetch(`/api/team/user/${companyId}/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update user');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['teamProfiles'] });
+            setSuccess("User updated successfully");
+            setError(null);
+            // Optional: Close dialog after a brief delay to show success message
+            setTimeout(() => {
+                onClose();
+                setSuccess("");
+            }, 1000);
+        },
+        onError: (error) => {
+            setError(error.message);
+            setSuccess("");
+        }
+    });
 
-    // TODO: handle submit needs to update user role, name, status, etc. 
-    // Will most likely send to an API route to handle this
     const handleSubmit = (e) => {
         e.preventDefault();
-        // onSubmit({ title, collectionId: collectionId || defaultCollectionId || null });
-        // setTitle("");
-        // setCollectionId(defaultCollectionId);
-        // onClose();
+        
+        const userData = {
+            display_name: name,
+            role: userRole,
+            status: userStatus
+        };
+        
+        updateUserMutation.mutate(userData);
     };
 
     return (
@@ -49,7 +88,7 @@ export function UserDialog({ isOpen, onClose, user }) {
                 <DialogHeader>
                     <DialogTitle>User Details</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+                <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
                     <div className="grid gap-2">
                         <Label htmlFor="name">User Name</Label>
                         <Input
@@ -60,13 +99,13 @@ export function UserDialog({ isOpen, onClose, user }) {
                         />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="collection">Role</Label>
+                        <Label htmlFor="role">Role</Label>
                         <Select
                             value={userRole}
                             onValueChange={setUserRole}
                         >
                             <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Select a role" />
                             </SelectTrigger>
                             <SelectContent>
                                 {roles.map((role) => (
@@ -78,13 +117,13 @@ export function UserDialog({ isOpen, onClose, user }) {
                         </Select>
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="collection">Role</Label>
+                        <Label htmlFor="status">Status</Label>
                         <Select
                             value={userStatus}
                             onValueChange={setUserStatus}
                         >
                             <SelectTrigger>
-                                <SelectValue />
+                                <SelectValue placeholder="Select a status" />
                             </SelectTrigger>
                             <SelectContent>
                                 {statuses.map((status) => (
@@ -95,12 +134,27 @@ export function UserDialog({ isOpen, onClose, user }) {
                             </SelectContent>
                         </Select>
                     </div>
+                    
+                    {/* Success Message */}
+                    {success && (
+                        <p className="text-green-600 text-sm">{success}</p>
+                    )}
+                    
+                    {/* Error Message */}
+                    {error && (
+                        <p className="text-red-600 text-sm">Error: {error}</p>
+                    )}
+                    
                     <DialogFooter className="mt-4">
                         <Button type="button" variant="outline" onClick={onClose}>
                             Cancel
                         </Button>
-                        <Button type="submit" variant="defaultGreen" disabled={!name.trim()}>
-                            Save Changes
+                        <Button 
+                            type="submit" 
+                            variant="defaultGreen" 
+                            disabled={!name.trim() || updateUserMutation.isPending}
+                        >
+                            {updateUserMutation.isPending ? "Saving..." : "Save"}
                         </Button>
                     </DialogFooter>
                 </form>

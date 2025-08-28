@@ -26,7 +26,7 @@ export async function GET(req, { params }) {
         .single()
 
     if (membershipError || !membership) {
-        console.error(membershipError);
+        
 
         return NextResponse.json(({ error: 'Forbidden' }), { status: 403 })
     }
