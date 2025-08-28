@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import Link from "next/link";
 import { signInAction } from "@/app/actions";
 import StatusMessage from "@/components/status-message";
 
-export default function SignInPage() {
+export default async function SignInPage() {
   return (
     <>
       
