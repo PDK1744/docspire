@@ -15,10 +15,12 @@ import { cn } from "@/lib/utils";
 import { DashboardHeader } from "@/components/dashboard-header";
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { set } from "zod";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [companyId, setCompanyId] = useState(null);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -38,7 +40,7 @@ export default function DashboardLayout({ children }) {
 
       const { data: membership, error: membershipError } = await supabase
         .from("company_members")
-        .select("company_id")
+        .select("company_id, role")
         .eq("user_id", user.id)
         .single();
 
@@ -48,6 +50,7 @@ export default function DashboardLayout({ children }) {
       }
 
       setCompanyId(membership.company_id);
+      setRole(membership.role);
       setLoading(false);
     }
 
@@ -75,15 +78,18 @@ export default function DashboardLayout({ children }) {
   }
 
   const navigation = [
-    { name: "Collections", href: "/dashboard", icon: Blocks },
-    { name: "Documents", href: `/dashboard/docs/${companyId}`, icon: Files },
-    { name: "Team", href: `/dashboard/team/${companyId}`, icon: Users },
-    {
-      name: "Settings",
-      href: `/dashboard/settings/${companyId}`,
-      icon: Settings,
-    },
-  ];
+  { name: "Collections", href: "/dashboard", icon: Blocks },
+  { name: "Documents", href: `/dashboard/docs/${companyId}`, icon: Files },
+  ...(role === "admin"
+    ? [{ name: "Team", href: `/dashboard/team/${companyId}`, icon: Users }]
+    : []),
+  {
+    name: "Settings",
+    href: `/dashboard/settings/${companyId}`,
+    icon: Settings,
+  },
+];
+
 
   const SidebarContent = () => (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-200/60 bg-white/95 backdrop-blur-sm px-6 pb-4 shadow-sm">

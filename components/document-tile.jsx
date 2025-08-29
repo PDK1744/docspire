@@ -41,7 +41,7 @@ export function DocumentTile({ collection, documents = [], onEdit, onDelete, onC
             >
               <Plus className="h-4 w-4" />
             </Button>
-            <CollectionDialog
+            {isAdmin && (<CollectionDialog
               trigger={
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <Settings className="h-4 w-4" />
@@ -49,7 +49,7 @@ export function DocumentTile({ collection, documents = [], onEdit, onDelete, onC
               }
               collection={collection}
               onSubmit={(formData) => onEdit(id, formData)}
-            />
+            />)}
             {isAdmin && (
               <>
                 <Button

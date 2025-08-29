@@ -15,12 +15,47 @@ import { File, Trash2, Pencil } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { SearchCommand } from "../search-command";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DeleteDocumentDialog } from "../delete-document-dialog";
 
 export default function DocumentsPage({ companyId }) {
   const [showDeleteDialogOpen, setShowDeleteDialogOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [role, setRole] = useState(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+      async function fetchUserRole() {
+        const supabase = createClient();
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+  
+        if (error || !user) {
+          
+          return;
+        }
+  
+        const { data: membership, error: membershipError } = await supabase
+          .from("company_members")
+          .select("company_id, role")
+          .eq("user_id", user.id)
+          .single();
+  
+        if (membershipError || !membership) {
+          
+          return;
+        }
+  
+        
+        setRole(membership.role);
+        
+      }
+      fetchUserRole()
+  
+      
+    }, [companyId]);
 
   const fetchDocuments = async (companyId) => {
     const res = await fetch(`/api/docs/${companyId}`);
@@ -80,7 +115,7 @@ export default function DocumentsPage({ companyId }) {
                   {/* <TableHead>Created By</TableHead> */}
                   <TableHead>Last Updated</TableHead>
                   <TableHead>Last Updated By</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {role === 'admin' && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -102,7 +137,8 @@ export default function DocumentsPage({ companyId }) {
                     {/* <TableCell>{doc.owner}</TableCell> */}
                     <TableCell>{formatExpireDate(doc.updated_at)}</TableCell>
                     <TableCell>{doc.last_updated_by}</TableCell>
-                    <TableCell className="text-right">
+                    {role === 'admin' && (
+                      <TableCell className="text-right">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -122,6 +158,7 @@ export default function DocumentsPage({ companyId }) {
                         <Pencil className="h-4 w-4" />
                       </Button>
                     </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

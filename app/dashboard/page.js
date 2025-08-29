@@ -179,7 +179,7 @@ export default function DashboardPage() {
         .single();
 
       if (error) {
-        console.error("Error creating document:", error);
+        console.error("Error creating document:", error.message);
         return;
       }
 

@@ -133,7 +133,8 @@ export default function ProfileSettings() {
               <Label htmlFor="email" className="text-sm font-medium text-slate-700">
                 Email Address
               </Label>
-              <Input 
+              <Input
+                disabled
                 id="email" 
                 type="email" 
                 value={userEmail} 
