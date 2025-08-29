@@ -8,6 +8,7 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { signInAction } from "@/app/actions";
 import StatusMessage from "@/components/status-message";
+import { SignInButton } from "@/components/signin-button";
 
 export default async function SignInPage() {
   return (
@@ -51,9 +52,7 @@ export default async function SignInPage() {
                 autoComplete="current-password"
               />
             </div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Sign In
-            </Button>
+            <SignInButton />
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 text-sm text-center">
