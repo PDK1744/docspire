@@ -254,7 +254,7 @@ export default function DashboardPage() {
         <div className="flex gap-3">
           <CollectionDialog
             trigger={
-              <Button variant="outline" className="gap-2">
+              <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2">
                 <Layout className="h-4 w-4" />
                 New Collection
               </Button>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
             onSubmit={handleCreateCollection}
           />
           <Button 
-            className="gap-2 bg-blue-600 hover:bg-blue-700"
+            className="gap-2 bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2"
             onClick={() => setShowNewDocumentDialog(true)}
           >
             <FilePlus className="h-4 w-4" />
