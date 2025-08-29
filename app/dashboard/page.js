@@ -252,7 +252,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Documents</h1>
         <div className="flex gap-3">
-          <CollectionDialog
+          {isAdmin && (<CollectionDialog
             trigger={
               <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2">
                 <Layout className="h-4 w-4" />
@@ -260,7 +260,7 @@ export default function DashboardPage() {
               </Button>
             }
             onSubmit={handleCreateCollection}
-          />
+          />)}
           <Button 
             className="gap-2 bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2"
             onClick={() => setShowNewDocumentDialog(true)}
@@ -302,7 +302,7 @@ export default function DashboardPage() {
             />
           ))}
           {/* Add Collection Tile */}
-          <CollectionDialog
+          {isAdmin && (<CollectionDialog
             trigger={
               <Card className="hover:shadow-md transition-shadow border-dashed flex items-center justify-center h-[250px] cursor-pointer group">
                 <div className="text-center">
@@ -314,7 +314,7 @@ export default function DashboardPage() {
               </Card>
             }
             onSubmit={handleCreateCollection}
-          />
+          />)}
         </div>
       ) : (
         <Card className="p-12">
