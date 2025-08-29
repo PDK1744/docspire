@@ -50,6 +50,8 @@ export const signInAction = async (formData) => {
     const password = formData.get("password")?.toString();
     const supabase = await createClient();
 
+
+
     const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -72,10 +74,22 @@ export const signInAction = async (formData) => {
         .single();
 
     if (companyError || !companyMember) {
-        // User is not part of a company or an error occurred, redirect them to a different path
-        console.error("User not part of a company or an error occurred:", companyError);
-        return redirect("/onboarding"); // Redirect to a path for users without a company
+        return redirect("/onboarding"); 
     }
+
+    // check if the user is currently active
+    const { data: userStatus, error: userStatusError} = await supabase
+        .from('profiles')
+        .select('status')
+        .eq('id', user.id)
+        .eq('company_id', companyMember.company_id)
+        .single();
+    if (!userStatus || userStatus.status !== 'active' || userStatusError) {
+        console.error("User is not active or an error occurred:", userStatusError);
+        return encodedRedirect("error", "/sign-in", "Your account is not active. Please contact your administrator.");
+    }
+
+
     return redirect("/dashboard")
 };
 
