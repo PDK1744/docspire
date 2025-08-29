@@ -130,9 +130,7 @@ export default function DocumentsPage({ companyId }) {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      {!doc.document_collections.name
-                        ? "N/A"
-                        : doc.document_collections.name}
+                      {doc.document_collections?.name || "N/A"}
                     </TableCell>
                     {/* <TableCell>{doc.owner}</TableCell> */}
                     <TableCell>{formatExpireDate(doc.updated_at)}</TableCell>

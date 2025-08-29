@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export default async function TeamPage({ params }) {
   const { id: companyId } = await params;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -19,8 +19,9 @@ export default async function TeamPage({ params }) {
     .from("company_members")
     .select("role")
     .eq("user_id", user.id)
-    .eq("company_id", params.companyId)
+    .eq("company_id", companyId)
     .single();
+    console.log(membership.role);
 
   if (!membership || membership.role !== "admin") {
     redirect("/dashboard");
