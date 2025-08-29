@@ -19,6 +19,9 @@ export const signUpAction = async (formData) => {
     if (password !== confirmPassword) {
         return encodedRedirect("error", "/sign-up", "Passwords do not match.");
     }
+    if (password.length < 8) {
+        return encodedRedirect("error", "/sign-up", "Password must be at least 8 characters long.");
+    }
 
     const { data, error } = await supabase.auth.signUp({
         email,
