@@ -13,18 +13,22 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "DocSpire - Beautiful Documentation Hub for Teams",
-  description: "Create beautiful, organized documentation for your business. Collaborate with your team, manage permissions, and keep your docs in one place.",
+  description:
+    "Create beautiful, organized documentation for your business. Collaborate with your team, manage permissions, and keep your docs in one place.",
 };
 
 import { Toaster } from "@/components/ui/toaster";
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
+      
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        
         <Toaster />
       </body>
     </html>

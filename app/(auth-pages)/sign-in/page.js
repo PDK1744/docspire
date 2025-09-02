@@ -1,9 +1,5 @@
 "use server";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { signInAction } from "@/app/actions";
@@ -12,68 +8,79 @@ import { SignInButton } from "@/components/signin-button";
 
 export default async function SignInPage() {
   return (
-    <>
-      
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-3">
-            <div className="flex justify-center">
-              <div className="flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-blue-600" />
-              <Link href="/" className="text-xl font-bold">DocSpire</Link>
+    <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
+      <div className="card w-full max-w-md shadow-xl bg-base-100">
+        <div className="card-body">
+          {/* Header */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-primary" />
+              <Link href="/" className="text-xl font-bold">
+                DocSpire
+              </Link>
             </div>
+            <h2 className="card-title text-2xl">Welcome back</h2>
+            <p className="text-sm opacity-70 text-center">
+              Enter your email and password to sign in to your account
+            </p>
+            <StatusMessage />
           </div>
-          <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-          <CardDescription className="text-center">
-            Enter your email and password to sign in to your account
-          </CardDescription>
-          <StatusMessage />
-        </CardHeader>
-        <CardContent>
-          <form action={signInAction} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
+
+          {/* Form */}
+          <form action={signInAction} className="form-control gap-4 mt-4">
+            <div className="form-control">
+              <label className="label" htmlFor="email">
+                <span className="label-text">Email</span>
+              </label>
+              <input
                 id="email"
                 name="email"
                 type="email"
                 placeholder="name@company.com"
+                className="input w-full"
                 required
                 autoComplete="email"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
+
+            <div className="form-control mb-4">
+              <label className="label" htmlFor="password">
+                <span className="label-text">Password</span>
+              </label>
+              <input
                 id="password"
                 name="password"
                 type="password"
+                className="input w-full"
                 required
                 autoComplete="current-password"
               />
             </div>
+
+            
             <SignInButton />
           </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4 text-sm text-center">
-          <Link 
-            href="/auth/forgot-password"
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-500"
-          >
-            Forgot your password?
-          </Link>
-          <div className="text-gray-600 dark:text-gray-400">
-            Don&apos;t have an account?{" "}
-            <Link 
-              href="/sign-up"
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-500 font-medium"
+
+          {/* Footer */}
+          <div className="mt-6 text-center text-sm">
+            <Link
+              href="/auth/forgot-password"
+              className="link link-primary"
             >
-              Sign up
+              Forgot your password?
             </Link>
+            <div className="mt-2 opacity-70">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/sign-up"
+                className="link link-primary font-medium"
+              >
+                Sign up
+              </Link>
+            </div>
           </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
-    </>
   );
 }

@@ -1,15 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { signUpAction } from "@/app/actions";
@@ -17,60 +6,72 @@ import StatusMessage from "@/components/status-message";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-3">
-          <div className="flex justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
+      <div className="card w-full max-w-md bg-base-100 shadow-xl">
+        <div className="card-body space-y-4">
+          {/* Header */}
+          <div className="flex flex-col items-center space-y-3">
             <div className="flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-blue-600" />
-              <Link href="/" className="text-xl font-bold">
+              <BookOpen className="w-6 h-6 text-primary" />
+              <Link href="/" className="text-xl font-bold text-primary">
                 DocSpire
               </Link>
             </div>
+            <h2 className="card-title text-2xl text-center">
+              Create an account
+            </h2>
+            <p className="text-center text-base-content/70 text-sm">
+              Sign up to get started with DocSpire. If joining a company, you
+              will require a company code for the next step.
+            </p>
+            <StatusMessage />
           </div>
-          <CardTitle className="text-2xl text-center">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-center text-gray-600 dark:text-gray-400">
-            Sign up to get started with DocSpire. If joining a company, you will
-            require a company code for the next step.
-          </CardDescription>
-          <StatusMessage />
-        </CardHeader>
-        <CardContent>
+
+          {/* Form */}
           <form action={signUpAction} className="space-y-6">
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
+              <div className="form-control">
+                <label className="label" htmlFor="name">
+                  <span className="label-text">Name</span>
+                </label>
+                <input
                   id="name"
                   name="name"
                   type="text"
                   placeholder="Your Name"
+                  className="input input-bordered w-full"
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
+
+              <div className="form-control">
+                <label className="label" htmlFor="email">
+                  <span className="label-text">Email</span>
+                </label>
+                <input
                   id="email"
                   name="email"
                   type="email"
                   placeholder="name@company.com"
+                  className="input input-bordered w-full"
                   required
                   autoComplete="email"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
+
+              <div className="form-control">
+                <label className="label" htmlFor="password">
+                  <span className="label-text">Password</span>
+                </label>
+                <input
                   id="password"
                   name="password"
                   type="password"
+                  className="input input-bordered w-full"
                   required
                   autoComplete="new-password"
                 />
-                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                <div className="mt-2 text-xs text-base-content/70 space-y-1">
                   <p className="font-medium">Password must contain:</p>
                   <ul className="list-disc list-inside space-y-0.5 ml-2">
                     <li>At least 8 characters</li>
@@ -80,37 +81,39 @@ export default function SignUpPage() {
                   </ul>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
+
+              <div className="form-control">
+                <label className="label" htmlFor="confirmPassword">
+                  <span className="label-text">Confirm Password</span>
+                </label>
+                <input
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
+                  className="input input-bordered w-full"
                   required
                   autoComplete="new-password"
                 />
               </div>
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
-            >
+
+            <button type="submit" className="btn btn-primary w-full">
               Create Account
-            </Button>
+            </button>
           </form>
-        </CardContent>
-        <CardFooter className="text-sm text-center">
-          <div className="text-gray-600 dark:text-gray-400">
+
+          {/* Footer */}
+          <div className="pt-4 text-sm text-center text-base-content/70">
             Already have an account?{" "}
             <Link
               href="/sign-in"
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-500 font-medium"
+              className="text-primary font-medium hover:underline"
             >
               Sign in
             </Link>
           </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
