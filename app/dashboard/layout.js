@@ -15,14 +15,12 @@ import { cn } from "@/lib/utils";
 import { DashboardHeader } from "@/components/dashboard-header";
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { set } from "zod";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [companyId, setCompanyId] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
@@ -57,168 +55,40 @@ export default function DashboardLayout({ children }) {
     fetchCompanyId();
   }, []);
 
-  // Close mobile sidebar when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        sidebarOpen &&
-        !event.target.closest(".sidebar") &&
-        !event.target.closest(".mobile-menu-button")
-      ) {
-        setSidebarOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [sidebarOpen]);
-
   if (loading) {
     return <div className="skeleton h-6 w-40" />;
   }
 
   const navigation = [
-  { name: "Collections", href: "/dashboard", icon: Blocks },
-  { name: "Documents", href: `/dashboard/docs/${companyId}`, icon: Files },
-  ...(role === "admin"
-    ? [{ name: "Team", href: `/dashboard/team/${companyId}`, icon: Users }]
-    : []),
-  {
-    name: "Settings",
-    href: `/dashboard/settings/${companyId}`,
-    icon: Settings,
-  },
-];
-
-
-  const SidebarContent = () => (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-slate-200/60 bg-white/95 backdrop-blur-sm px-6 pb-4 shadow-sm">
-      <div
-        className={cn(
-          "flex h-16 shrink-0 items-center",
-          sidebarCollapsed ? "justify-center" : "justify-between"
-        )}
-      >
-        <Link
-          href="/dashboard"
-          className={cn(
-            "flex items-center gap-2",
-            sidebarCollapsed && "justify-center"
-          )}
-        >
-          <div className="p-1.5 bg-blue-50 rounded-lg">
-            <BookOpen className="h-5 w-5 text-blue-600" />
-          </div>
-          {!sidebarCollapsed && (
-            <span className="text-lg font-semibold text-slate-800">
-              DocSpire
-            </span>
-          )}
-        </Link>
-        {/* Desktop collapse button */}
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="hidden lg:flex p-2 rounded-lg hover:bg-slate-100/70 transition-colors"
-        >
-          <Menu className="h-4 w-4 text-slate-500" />
-        </button>
-      </div>
-
-      <nav className="flex flex-1 flex-col">
-        <ul role="list" className="flex flex-1 flex-col gap-y-7">
-          <li>
-            <ul role="list" className="-mx-2 space-y-2">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        isActive
-                          ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
-                          : "text-slate-600 hover:text-blue-700 hover:bg-slate-50/70",
-                        "group flex gap-x-3 rounded-l-lg p-3 text-sm leading-6 font-medium transition-all duration-200",
-                        sidebarCollapsed ? "justify-center" : ""
-                      )}
-                      title={sidebarCollapsed ? item.name : undefined}
-                      onClick={() => setSidebarOpen(false)}
-                    >
-                      <item.icon
-                        className={cn(
-                          isActive
-                            ? "text-blue-600"
-                            : "text-slate-400 group-hover:text-blue-600",
-                          "h-5 w-5 shrink-0"
-                        )}
-                        aria-hidden="true"
-                      />
-                      {!sidebarCollapsed && item.name}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  );
+    { name: "Collections", href: "/dashboard", icon: Blocks },
+    { name: "Documents", href: `/dashboard/docs/${companyId}`, icon: Files },
+    ...(role === "admin"
+      ? [{ name: "Team", href: `/dashboard/team/${companyId}`, icon: Users }]
+      : []),
+    {
+      name: "Settings",
+      href: `/dashboard/settings/${companyId}`,
+      icon: Settings,
+    },
+  ];
 
   return (
     <ReactQueryProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-stone-50">
-        {/* Mobile sidebar overlay */}
-        <div
-          className={cn(
-            "fixed inset-0 z-50 lg:hidden",
-            sidebarOpen ? "block" : "hidden"
-          )}
-        >
-          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm" />
-          <div className="sidebar fixed inset-y-0 left-0 z-50 w-64 flex flex-col">
-            <div className="absolute top-0 right-0 -mr-12 pt-2">
-              <button
-                type="button"
-                className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-slate-600/20 backdrop-blur focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white/20"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <X className="h-5 w-5 text-white" />
-              </button>
-            </div>
-            <SidebarContent />
-          </div>
-        </div>
-
-        {/* Desktop sidebar */}
-        <div
-          className={cn(
-            "hidden lg:fixed lg:inset-y-0 lg:flex lg:flex-col transition-all duration-300",
-            sidebarCollapsed ? "lg:w-16" : "lg:w-64"
-          )}
-        >
-          <SidebarContent />
-        </div>
-
-        {/* Main content */}
-        <div
-          className={cn(
-            "transition-all duration-300",
-            "lg:pl-64",
-            sidebarCollapsed && "lg:pl-16"
-          )}
-        >
-          {/* Mobile header with menu button */}
-          <div className="lg:hidden">
-            <div className="flex items-center justify-between p-4 border-b border-slate-200/60 bg-white/95 backdrop-blur-sm shadow-sm">
-              <button
-                type="button"
-                className="mobile-menu-button p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100/70 transition-colors"
-                onClick={() => setSidebarOpen(true)}
-              >
+      <div className="drawer lg:drawer-open">
+        {/* Hidden checkbox that controls drawer state */}
+        <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
+        
+        {/* Main content area */}
+        <div className="drawer-content flex flex-col min-h-screen bg-gradient-to-br from-slate-50 to-stone-50">
+          {/* Mobile navbar */}
+          <div className="navbar bg-base-100/95 backdrop-blur-sm shadow-sm lg:hidden">
+            <div className="navbar-start">
+              <label htmlFor="dashboard-drawer" className="btn btn-square btn-ghost">
                 <Menu className="h-6 w-6" />
-              </button>
-              <Link href="/dashboard" className="flex items-center gap-2">
+              </label>
+            </div>
+            <div className="navbar-center">
+              <Link href="/dashboard" className="btn btn-ghost normal-case text-xl">
                 <div className="p-1.5 bg-blue-50 rounded-lg">
                   <BookOpen className="h-5 w-5 text-blue-600" />
                 </div>
@@ -226,14 +96,98 @@ export default function DashboardLayout({ children }) {
                   DocSpire
                 </span>
               </Link>
+            </div>
+            <div className="navbar-end">
               <div className="w-10" />
             </div>
           </div>
 
-          <DashboardHeader />
-          <main className="py-6 lg:py-8">
+          {/* Desktop header */}
+          <div className="hidden lg:block">
+            <DashboardHeader />
+          </div>
+
+          {/* Main content */}
+          <main className="flex-1 py-6 lg:py-8 bg-base-300">
             <div className="px-4 sm:px-6 lg:px-8">{children}</div>
           </main>
+        </div>
+        
+        {/* Sidebar */}
+        <div className="drawer-side">
+          <label htmlFor="dashboard-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+          <aside className={cn(
+            "bg-base-100/95 backdrop-blur-sm shadow-xl border-r border-base-200 transition-all duration-300",
+            sidebarCollapsed ? "w-16" : "w-64",
+            "min-h-full flex flex-col"
+          )}>
+            {/* Sidebar header */}
+            <div className={cn(
+              "flex h-16 shrink-0 items-center px-4",
+              sidebarCollapsed ? "justify-center" : "justify-between"
+            )}>
+              <Link
+                href="/dashboard"
+                className={cn(
+                  "flex items-center gap-2",
+                  sidebarCollapsed && "justify-center"
+                )}
+              >
+                <div className="p-1.5 bg-blue-50 rounded-lg">
+                  <BookOpen className="h-5 w-5 text-blue-600" />
+                </div>
+                {!sidebarCollapsed && (
+                  <span className="text-lg font-semibold text-slate-800">
+                    DocSpire
+                  </span>
+                )}
+              </Link>
+              {/* Desktop collapse button */}
+              <button
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="hidden lg:flex btn btn-ghost btn-sm"
+              >
+                <Menu className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Navigation menu */}
+            <div className="flex-1 px-2">
+              <ul className="menu menu-md gap-1">
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          isActive
+                            ? "active bg-primary/10 text-primary border-r-2 border-primary"
+                            : "text-base-content/70 hover:text-primary hover:bg-base-200/50",
+                          "group gap-3 font-medium transition-all duration-200",
+                          sidebarCollapsed ? "justify-center tooltip tooltip-right" : ""
+                        )}
+                        data-tip={sidebarCollapsed ? item.name : undefined}
+                      >
+                        <item.icon
+                          className={cn(
+                            isActive
+                              ? "text-primary"
+                              : "text-base-content/50 group-hover:text-primary",
+                            "h-5 w-5 shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                        {!sidebarCollapsed && (
+                          <span className="truncate">{item.name}</span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </aside>
         </div>
       </div>
     </ReactQueryProvider>

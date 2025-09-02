@@ -2,17 +2,9 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SearchCommand } from "@/components/search-command";
-import { set } from "zod";
 
 export function DashboardHeader() {
   const [companyName, setCompanyName] = useState("");
@@ -30,19 +22,21 @@ export function DashboardHeader() {
 
         const { data: companyData } = await supabase
           .from("company_members")
-          .select(`
+          .select(
+            `
             companies (
               name
             ),
             company_id,
             role
-          `)
+          `
+          )
           .eq("user_id", userData.user.id)
           .single();
 
         if (companyData?.companies) {
           setCompanyName(companyData.companies.name);
-          setIsAdmin(companyData.role === 'admin');
+          setIsAdmin(companyData.role === "admin");
           setCompanyId(companyData.company_id);
         }
       } catch (error) {
@@ -57,64 +51,81 @@ export function DashboardHeader() {
 
   if (loading) {
     return (
-      <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-        <div className="h-5 w-40 animate-pulse bg-gray-200 rounded"></div>
-        <div className="ml-auto h-8 w-8 animate-pulse bg-gray-200 rounded-full"></div>
+      <header className="navbar bg-base-100/95 backdrop-blur-sm border-b border-base-200 shadow-sm sticky top-0 z-50">
+        <div className="navbar-start">
+          <div className="skeleton h-5 w-40"></div>
+        </div>
+        <div className="navbar-end">
+          <div className="skeleton h-8 w-8 rounded-full"></div>
+        </div>
       </header>
     );
   }
 
   // Get the first letter of the company name for the avatar
   const firstLetter = companyName ? companyName[0].toUpperCase() : "?";
+
   
-  // Generate a consistent color based on the company name
-  const colors = [
-    "bg-blue-500", "bg-green-500", "bg-purple-500", 
-    "bg-pink-500", "bg-indigo-500", "bg-rose-500"
-  ];
-  const colorIndex = [...companyName].reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
-  const avatarColor = colors[colorIndex];
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-x-3">
-        <h1 className="font-semibold text-xl tracking-tight">
-          <span>{companyName}</span>
+    <header className="navbar bg-secondary shadow-sm sticky top-0 z-50">
+      {/* Company name */}
+      <div className="navbar-start">
+        <h1 className="text-xl font-semibold tracking-tight text-accent-content">
+          {companyName}
         </h1>
       </div>
-      <div className="flex-1 flex items-center justify-center px-4">
-        <SearchCommand companyId={company_id}/>
+
+      {/* Search bar */}
+      <div className="navbar-center hidden lg:flex flex-1 max-w-lg px-4">
+        <SearchCommand companyId={company_id} />
       </div>
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div className={`${avatarColor} h-8 w-8 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-gray-200 transition-all`}>
-              <span className="text-white font-medium">{firstLetter}</span>
+
+      {/* User menu */}
+      <div className="navbar-end">
+        <div className="dropdown dropdown-end">
+          <div tabIndex={0} role="button" className="btn btn-accent-content btn-circle mr-4">
+            <div className="w-10 rounded-full flex items-center justify-center">
+              
+                {firstLetter}
+             
             </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          </div>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+          >
             {isAdmin && (
               <>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/dashboard/settings')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Company Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <li>
+                  <button
+                    className="flex items-center gap-2 hover:bg-base-300"
+                    onClick={() => router.push("/dashboard/settings")}
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span>Company Settings</span>
+                  </button>
+                </li>
+                {/* <li>
+                  <hr className="my-1 border-base-200" />
+                </li> */}
               </>
             )}
-            <DropdownMenuItem 
-              className="cursor-pointer text-red-600 focus:text-red-600" 
-              onClick={async () => {
-                await supabase.auth.signOut();
-                router.push('/');
-                router.refresh();
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Sign Out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <li>
+              <button
+                className="flex items-center gap-2 text-error hover:bg-error/10"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  router.push("/");
+                  router.refresh();
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Sign Out</span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
     </header>
   );
