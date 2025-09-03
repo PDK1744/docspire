@@ -87,7 +87,7 @@ export default function ProfileSettings() {
   }
 
   return (
-    <div className="card bg-white/95 shadow-sm border border-slate-200/60">
+    <div className="card bg-base-100 shadow-md border border-base-200">
       {/* Header */}
       <div className="card-body pb-4">
         <div className="flex items-center gap-3">
@@ -95,10 +95,10 @@ export default function ProfileSettings() {
             <User className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <h2 className="card-title text-xl text-slate-800">
+            <h2 className="card-title text-lg font-semibold">
               Profile Settings
             </h2>
-            <p className="text-slate-600">
+            <p className="text-white-500 text-sm">
               Update your personal account information
             </p>
           </div>
@@ -129,7 +129,7 @@ export default function ProfileSettings() {
             {/* Display Name */}
             <div className="form-control">
               <label htmlFor="name" className="label">
-                <span className="label-text font-medium text-slate-700 text-sm">
+                <span className="label-text font-medium text-white-600 text-sm">
                   Display Name
                 </span>
               </label>
@@ -145,7 +145,7 @@ export default function ProfileSettings() {
             {/* Email Address */}
             <div className="form-control">
               <label htmlFor="email" className="label">
-                <span className="label-text font-medium text-slate-700 text-sm">
+                <span className="label-text font-medium text-white-600 text-sm">
                   Email Address
                 </span>
               </label>

@@ -71,7 +71,7 @@ export function DashboardHeader() {
     <header className="navbar bg-secondary shadow-sm sticky top-0 z-50">
       {/* Company name */}
       <div className="navbar-start">
-        <h1 className="text-xl font-semibold tracking-tight text-accent-content">
+        <h1 className="text-xl font-semibold tracking-tight text-secondary-content">
           {companyName}
         </h1>
       </div>
@@ -100,7 +100,7 @@ export function DashboardHeader() {
                 <li>
                   <button
                     className="flex items-center gap-2 hover:bg-base-300"
-                    onClick={() => router.push("/dashboard/settings")}
+                    onClick={() => router.push(`/dashboard/settings/${company_id}`)}
                   >
                     <Settings className="h-4 w-4" />
                     <span>Company Settings</span>
@@ -113,15 +113,15 @@ export function DashboardHeader() {
             )}
             <li>
               <button
-                className="flex items-center gap-2 text-error hover:bg-error/10"
+                className="flex items-center gap-2 text-error hover:bg-error/50"
                 onClick={async () => {
                   await supabase.auth.signOut();
                   router.push("/");
                   router.refresh();
                 }}
               >
-                <LogOut className="h-4 w-4" />
-                <span>Sign Out</span>
+                <LogOut className="h-4 w-4" color="red"/>
+                <span className="text-red-600">Sign Out</span>
               </button>
             </li>
           </ul>

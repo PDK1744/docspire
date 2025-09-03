@@ -163,8 +163,8 @@ export default function CompanySettings({ companyId }) {
             <Building2 className="h-5 w-5 text-amber-600" />
           </div>
           <div>
-            <h2 className="card-title text-lg">Company Settings</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="card-title text-lg font-semibold ">Company Settings</h2>
+            <p className="text-sm text-white-500">
               Manage your organization settings and team access
             </p>
           </div>
@@ -230,9 +230,9 @@ export default function CompanySettings({ companyId }) {
           <div className="bg-base-200 rounded-lg p-4 space-y-4">
             <div>
               <label className="label">
-                <span className="label-text">Invite New Members</span>
+                <span className="label-text text-white-600">Invite New Members</span>
               </label>
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-sm text-white-500 mb-3">
                 Generate a join code for new team members to join your company
               </p>
 

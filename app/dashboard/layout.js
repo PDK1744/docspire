@@ -133,11 +133,11 @@ export default function DashboardLayout({ children }) {
                   sidebarCollapsed && "justify-center"
                 )}
               >
-                <div className="p-1.5 bg-blue-50 rounded-lg">
-                  <BookOpen className="h-5 w-5 text-blue-600" />
+                <div className="p-1.5 bg-primary rounded-lg">
+                  <BookOpen className="h-5 w-5 text-primary-content" />
                 </div>
                 {!sidebarCollapsed && (
-                  <span className="text-lg font-semibold text-slate-800">
+                  <span className="text-lg font-semibold text-primary">
                     DocSpire
                   </span>
                 )}
