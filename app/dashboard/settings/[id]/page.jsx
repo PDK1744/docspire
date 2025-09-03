@@ -34,9 +34,16 @@ export default async function SettingsPage({ params }) {
     
 
     return (
-        <div className=''>
+    
+        <div>
             <ProfileSettings />
-            {role === "admin" && <CompanySettings companyId={companyId}  />}
+            {role === "admin" && (
+                <>
+                <div className='divider'></div>
+                <CompanySettings companyId={companyId}  />
+                </>
+            )}
         </div>
+        
     );
 }

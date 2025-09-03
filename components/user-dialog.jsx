@@ -83,82 +83,102 @@ export function UserDialog({ isOpen, onClose, user, companyId }) {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>User Details</DialogTitle>
-                </DialogHeader>
-                <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">User Name</Label>
-                        <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="role">Role</Label>
-                        <Select
-                            value={userRole}
-                            onValueChange={setUserRole}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {roles.map((role) => (
-                                    <SelectItem key={role.id} value={role.id}>
-                                        {role.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="status">Status</Label>
-                        <Select
-                            value={userStatus}
-                            onValueChange={setUserStatus}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {statuses.map((status) => (
-                                    <SelectItem key={status.id} value={status.id}>
-                                        {status.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    
-                    {/* Success Message */}
-                    {success && (
-                        <p className="text-green-600 text-sm">{success}</p>
-                    )}
-                    
-                    {/* Error Message */}
-                    {error && (
-                        <p className="text-red-600 text-sm">Error: {error}</p>
-                    )}
-                    
-                    <DialogFooter className="mt-4">
-                        <Button type="button" variant="outline" onClick={onClose}>
-                            Cancel
-                        </Button>
-                        <Button 
-                            type="submit" 
-                            variant="defaultGreen" 
-                            disabled={!name.trim() || updateUserMutation.isPending}
-                        >
-                            {updateUserMutation.isPending ? "Saving..." : "Save"}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
+  <dialog className={`modal ${isOpen ? "modal-open" : ""}`}>
+    <div className="modal-box max-w-sm">
+      <h3 className="font-bold text-lg">User Details</h3>
+
+      <form className="grid gap-4 py-4" onSubmit={handleSubmit}>
+        {/* User Name */}
+        <div className="form-control">
+          <label htmlFor="name" className="label">
+            <span className="label-text">User Name</span>
+          </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="input input-bordered w-full"
+          />
+        </div>
+
+        {/* Role */}
+        <div className="form-control">
+          <label htmlFor="role" className="label">
+            <span className="label-text">Role</span>
+          </label>
+          <select
+            id="role"
+            value={userRole}
+            onChange={(e) => setUserRole(e.target.value)}
+            className="select select-bordered w-full"
+            required
+          >
+            <option disabled value="">
+              Select a role
+            </option>
+            {roles.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Status */}
+        <div className="form-control">
+          <label htmlFor="status" className="label">
+            <span className="label-text">Status</span>
+          </label>
+          <select
+            id="status"
+            value={userStatus}
+            onChange={(e) => setUserStatus(e.target.value)}
+            className="select select-bordered w-full"
+            required
+          >
+            <option disabled value="">
+              Select a status
+            </option>
+            {statuses.map((status) => (
+              <option key={status.id} value={status.id}>
+                {status.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Success Message */}
+        {success && (
+          <p className="text-green-600 text-sm">{success}</p>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <p className="text-red-600 text-sm">Error: {error}</p>
+        )}
+
+        {/* Footer */}
+        <div className="modal-action">
+          <button
+            type="button"
+            className="btn btn-outline"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="btn btn-success"
+            disabled={!name.trim() || updateUserMutation.isPending}
+          >
+            {updateUserMutation.isPending ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+);
+
 }

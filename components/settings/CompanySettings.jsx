@@ -1,25 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Copy, Building2, Users, CheckCircle, AlertCircle, Key } from "lucide-react"
-import { createClient } from "@/utils/supabase/client"
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Copy,
+  Building2,
+  Users,
+  CheckCircle,
+  AlertCircle,
+  Key,
+} from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function CompanySettings({ companyId }) {
-  const [user, setUser] = useState(null)
-  const [companyName, setCompanyName] = useState("")
-  const [joinCode, setJoinCode] = useState("")
-  const [joinCodeExpiration, setJoinCodeExpiration] = useState(null)
-  const [joinLoading, setjoinLoading] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState("")
-  const [copySuccess, setCopySuccess] = useState(false)
-  const supabase = createClient()
+  const [user, setUser] = useState(null);
+  const [companyName, setCompanyName] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+  const [joinCodeExpiration, setJoinCodeExpiration] = useState(null);
+  const [joinLoading, setjoinLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
+  const supabase = createClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,9 +45,9 @@ export default function CompanySettings({ companyId }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json",
         },
-        body: JSON.stringify({ companyName })
+        body: JSON.stringify({ companyName }),
       });
       if (!res.ok) {
         const errData = await res.json();
@@ -49,7 +62,7 @@ export default function CompanySettings({ companyId }) {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const handleCopyCode = async () => {
     try {
@@ -57,7 +70,7 @@ export default function CompanySettings({ companyId }) {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -67,7 +80,7 @@ export default function CompanySettings({ companyId }) {
       setError(null);
       try {
         const res = await fetch(`/api/company/${companyId}`, {
-          credentials: "include"
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch join code");
         const data = await res.json();
@@ -110,159 +123,156 @@ export default function CompanySettings({ companyId }) {
       const timer = setTimeout(() => setSuccess(""), 3000);
       return () => clearTimeout(timer);
     }
-  }, [success])
+  }, [success]);
 
   useEffect(() => {
     const verifyUser = async () => {
-      const { data, error } = await supabase.auth.getUser()
+      const { data, error } = await supabase.auth.getUser();
       if (!error && data?.user) {
-        setUser(data.user)
+        setUser(data.user);
       }
-    }
-    verifyUser()
-  }, [supabase])
+    };
+    verifyUser();
+  }, [supabase]);
 
   if (!user) {
     return (
-      <Card>
-        <CardContent className="p-6">
+      <div className="card bg-base-100 shadow-md">
+        <div className="card-body">
           <div className="flex items-center justify-center py-8">
-            <div className="animate-pulse text-slate-500">Loading company settings...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading company settings...
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    )
+        </div>
+      </div>
+    );
   }
 
   const formatExpireDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString();
-  }
+  };
 
   return (
-    <Card className="border-slate-200/60 shadow-sm bg-white/95">
-      <CardHeader className="pb-4">
+    <div className="card bg-base-100 shadow-md border border-base-200">
+      {/* Header */}
+      <div className="card-body pb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-amber-50 rounded-lg">
+          <div className="p-2 bg-amber-100 rounded-lg">
             <Building2 className="h-5 w-5 text-amber-600" />
           </div>
           <div>
-            <CardTitle className="text-xl text-slate-800">Company Settings</CardTitle>
-            <CardDescription className="text-slate-600">
+            <h2 className="card-title text-lg">Company Settings</h2>
+            <p className="text-sm text-gray-500">
               Manage your organization settings and team access
-            </CardDescription>
+            </p>
           </div>
         </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-8">
+      </div>
+
+      <div className="card-body space-y-8">
         {/* Status Messages */}
         {success && (
-          <Alert className="border-green-200 bg-green-50/50">
-            <CheckCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-700 font-medium">
-              {success}
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        {error && (
-          <Alert className="border-red-200 bg-red-50/50">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-700 font-medium">
-              {error}
-            </AlertDescription>
-          </Alert>
+          <div className="alert alert-success">
+            <CheckCircle className="h-5 w-5" />
+            <span>{success}</span>
+          </div>
         )}
 
-        {/* Company Info Section */}
+        {error && (
+          <div className="alert alert-error">
+            <AlertCircle className="h-5 w-5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Company Info */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-slate-500" />
-            <h3 className="text-lg font-semibold text-slate-800">Company Information</h3>
+            <Building2 className="h-4 w-4 text-gray-500" />
+            <h3 className="text-lg font-semibold">Company Information</h3>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="companyName" className="text-sm font-medium text-slate-700">
-                Company Name
-              </Label>
-              <Input 
-                id="companyName" 
-                value={companyName} 
+            <div>
+              <label htmlFor="companyName" className="label">
+                <span className="label-text">Company Name</span>
+              </label>
+              <input
+                id="companyName"
+                value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
                 placeholder="Enter company name"
+                className="input input-bordered w-full"
               />
             </div>
-            
+
             <div className="flex justify-end">
-              <Button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                className="btn btn-sm btn-primary hover:bg-success hover:text-success-content shadow-sm"
               >
                 {loading ? "Saving..." : "Save Changes"}
-              </Button>
+              </button>
             </div>
           </form>
         </div>
 
-        {/* Team Management Section */}
-        <div className="pt-6 border-t border-slate-100 space-y-4">
+        {/* Team Management */}
+        <div className="pt-6 border-t space-y-4">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-slate-500" />
-            <h3 className="text-lg font-semibold text-slate-800">Team Management</h3>
+            <Users className="h-4 w-4 text-gray-500" />
+            <h3 className="text-lg font-semibold">Team Management</h3>
           </div>
-          
-          <div className="bg-slate-50/50 rounded-lg p-4 space-y-4">
+
+          <div className="bg-base-200 rounded-lg p-4 space-y-4">
             <div>
-              <Label className="text-sm font-medium text-slate-700 mb-2 block">
-                Invite New Members
-              </Label>
-              <p className="text-sm text-slate-600 mb-3">
+              <label className="label">
+                <span className="label-text">Invite New Members</span>
+              </label>
+              <p className="text-sm text-gray-600 mb-3">
                 Generate a join code for new team members to join your company
               </p>
-              
-              <Button 
-                onClick={generateJoinCode} 
+
+              <button
+                onClick={generateJoinCode}
                 disabled={joinLoading}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                className="btn btn-sm btn-primary hover:bg-success hover:text-success-content shadow-sm"
               >
                 {joinLoading ? "Generating..." : "Generate New Join Code"}
-              </Button>
+              </button>
             </div>
-            
+
             {joinCode && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Key className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-slate-700">Current Join Code</span>
+                  <span className="text-sm font-medium">Current Join Code</span>
                 </div>
-                
-                <div className="bg-white border border-blue-200/70 rounded-lg p-4">
+
+                <div className="bg-base-100 border rounded-lg p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <code className="text-lg font-mono text-blue-700 bg-blue-50 px-3 py-2 rounded font-semibold">
+                    <div>
+                      <code className="text-lg font-mono text-blue-700 bg-blue-50 px-3 py-2 rounded">
                         {joinCode}
                       </code>
-                      <div className="text-sm text-slate-600 mt-2">
+                      <div className="text-sm text-gray-500 mt-2">
                         {joinCodeExpiration
                           ? `Expires: ${formatExpireDate(joinCodeExpiration)}`
                           : "No expiration set"}
                       </div>
                     </div>
-                    
-                    <Button
+
+                    <button
                       type="button"
-                      variant="outline"
-                      size="sm"
                       onClick={handleCopyCode}
-                      className="ml-3 border-blue-200 hover:bg-blue-50"
+                      className="btn btn-outline btn-sm"
                     >
                       {copySuccess ? (
                         <>
-                          <CheckCircle className="h-4 w-4 text-green-600 mr-1" />
+                          <CheckCircle className="h-4 w-4 mr-1 text-green-600" />
                           Copied!
                         </>
                       ) : (
@@ -271,14 +281,14 @@ export default function CompanySettings({ companyId }) {
                           Copy
                         </>
                       )}
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
-  )
+      </div>
+    </div>
+  );
 }

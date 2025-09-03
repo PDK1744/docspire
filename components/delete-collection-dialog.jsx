@@ -10,12 +10,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 
-export function DeleteCollectionDialog({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  collectionName, 
-  documentCount 
+export function DeleteCollectionDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  collectionName,
+  documentCount,
 }) {
   const [deleteOption, setDeleteOption] = useState("collection-only");
 
@@ -25,51 +25,86 @@ export function DeleteCollectionDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Delete Collection: {collectionName}</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
+    <div className={`modal ${isOpen ? "modal-open" : ""}`}>
+      <div className="modal-box w-full max-w-md">
+        {/* Header */}
+        <div className="mb-6">
+          <h3 className="font-bold text-lg text-base-content">
+            Delete Collection: {collectionName}
+          </h3>
+        </div>
+
+        <div className="space-y-4">
           {documentCount > 0 && (
-            <p className="text-sm text-gray-500">
-              This collection contains {documentCount} document{documentCount === 1 ? '' : 's'}.
+            <p className="text-sm text-base-content/60">
+              This collection contains {documentCount} document
+              {documentCount === 1 ? "" : "s"}.
             </p>
           )}
-          <RadioGroup
-            defaultValue="collection-only"
-            onValueChange={setDeleteOption}
-            className="grid gap-4"
-          >
-            <div className="flex items-start space-x-3">
-              <RadioGroupItem value="collection-only" id="collection-only" />
-              <Label htmlFor="collection-only" className="font-normal leading-tight">
-                Delete collection only
-                <span className="block text-sm text-gray-500 mt-1">
-                  Documents will be uncategorized but not deleted
-                </span>
-              </Label>
+
+          {/* Radio Group */}
+          <div className="space-y-4">
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="radio"
+                  name="delete-option"
+                  className="radio radio-primary"
+                  value="collection-only"
+                  defaultChecked
+                  onChange={(e) =>
+                    e.target.checked && setDeleteOption("collection-only")
+                  }
+                />
+                <div className="label-text">
+                  <div className="font-normal leading-tight text-base-content">
+                    Delete collection only
+                  </div>
+                  <div className="text-sm text-base-content/60 mt-1">
+                    Documents will be uncategorized but not deleted
+                  </div>
+                </div>
+              </label>
             </div>
-            <div className="flex items-start space-x-3">
-              <RadioGroupItem value="delete-all" id="delete-all" />
-              <Label htmlFor="delete-all" className="font-normal leading-tight">
-                Delete collection and documents
-                <span className="block text-sm text-gray-500 mt-1">
-                  This will permanently delete all documents in this collection
-                </span>
-              </Label>
+
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="radio"
+                  name="delete-option"
+                  className="radio radio-primary"
+                  value="delete-all"
+                  onChange={(e) =>
+                    e.target.checked && setDeleteOption("delete-all")
+                  }
+                />
+                <div className="label-text">
+                  <div className="font-normal leading-tight text-base-content">
+                    Delete collection and documents
+                  </div>
+                  <div className="text-sm text-base-content/60 mt-1">
+                    This will permanently delete all documents in this
+                    collection
+                  </div>
+                </div>
+              </label>
             </div>
-          </RadioGroup>
+          </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+
+        {/* Modal Actions */}
+        <div className="modal-action mt-6">
+          <button className="btn btn-ghost" onClick={onClose}>
             Cancel
-          </Button>
-          <Button variant="destructive" onClick={handleDelete}>
+          </button>
+          <button className="btn btn-error" onClick={handleDelete}>
             Delete
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </button>
+        </div>
+      </div>
+
+      {/* Modal backdrop - clicking outside closes modal */}
+      <div className="modal-backdrop" onClick={onClose}></div>
+    </div>
   );
 }
