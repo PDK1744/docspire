@@ -20,7 +20,7 @@ export function DocumentTile({ collection, documents = [], onEdit, onDelete, onC
       {/* Card Header */}
       <div className="card-body">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="card-title text-lg font-semibold text-base-content">{name}</h2>
+          <h2 className="card-title text-md font-semibold text-base-content">{name}</h2>
           <div className="flex items-center gap-1">
             <DocumentDialog
               isOpen={showNewDocumentDialog}
@@ -74,8 +74,8 @@ export function DocumentTile({ collection, documents = [], onEdit, onDelete, onC
         
         {/* description area */}
         {description && (
-          <div className="mb-3">
-            <p className="text-sm text-base-content/70 line-clamp-3">
+          <div className="">
+            <p className="text-xs text-base-content/70 line-clamp-3">
               {description}
             </p>
           </div>
@@ -83,6 +83,7 @@ export function DocumentTile({ collection, documents = [], onEdit, onDelete, onC
 
         {/* Documents list */}
         <div className="min-h-0">
+          <div className="divider divider-primary"></div>
           {documents.length > 0 ? (
             <div className="max-h-48 overflow-y-auto">
               <ul className="space-y-1">

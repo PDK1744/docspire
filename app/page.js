@@ -8,21 +8,21 @@ export default function Home() {
       <header className="navbar fixed top-0 z-10 bg-base-100/80 backdrop-blur border-b border-base-300">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-primary" />
-            <span className="text-xl font-bold">DocSpire</span>
+            <BookOpen className="w-6 h-6 text-info" />
+            <span className="text-xl font-bold text-info">DocSpire</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#features" className="link link-hover">
+            <a href="#features" className="link link-hover hover:text-info">
               Features
             </a>
-            <a href="#pricing" className="link link-hover">
+            <a href="#pricing" className="link link-hover hover:text-info">
               Pricing
             </a>
-            <Link href="/sign-in" className="link link-hover">
+            <Link href="/sign-in" className="link link-hover hover:text-info">
               Sign In
             </Link>
             <Link href="/sign-up">
-              <button className="btn btn-primary">Get Started</button>
+              <button className="btn btn-primary hover:bg-success hover:text-success-content">Get Started</button>
             </Link>
           </nav>
         </div>
@@ -33,7 +33,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl font-bold mb-6 text-primary">
-              Beautiful Documentation Hub for Teams
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-pink-500">Beautiful Documentation Hub for Teams</span>
             </h1>
             <p className="text-xl text-base-content/70 mb-8">
               Create, organize, and share your team's knowledge in one beautiful space.
@@ -41,7 +41,7 @@ export default function Home() {
             </p>
             <div className="flex gap-4 justify-center">
               <Link href="/sign-up">
-                <button className="btn btn-primary btn-lg">
+                <button className="btn btn-primary btn-lg hover:bg-success hover:text-success-content">
                   Start Free Trial
                 </button>
               </Link>

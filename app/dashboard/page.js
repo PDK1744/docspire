@@ -246,7 +246,7 @@ export default function DashboardPage() {
           {isAdmin && (
             <CollectionDialog
               trigger={
-                <button className="btn btn-primary gap-2">
+                <button className="btn btn-primary hover:btn-info gap-2">
                   <Layout className="h-4 w-4" />
                   New Collection
                 </button>
