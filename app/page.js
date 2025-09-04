@@ -1,3 +1,4 @@
+import Pricing from "@/components/subscription-plans/pricing";
 import { BookOpen, Users, Shield, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -91,6 +92,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+        {/* Pricing Section */}
+        <section id="pricing" className="py-20">
+          <Pricing />
+        </section>
+
       </main>
 
       {/* Footer */}

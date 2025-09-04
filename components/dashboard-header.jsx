@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { SearchCommand } from "@/components/search-command";
+import Account from "./subscription-plans/account/account";
 
 export function DashboardHeader() {
   const [companyName, setCompanyName] = useState("");
@@ -106,9 +107,9 @@ export function DashboardHeader() {
                     <span>Company Settings</span>
                   </button>
                 </li>
-                {/* <li>
-                  <hr className="my-1 border-base-200" />
-                </li> */}
+                <li>
+                  <Account />
+                </li>
               </>
             )}
             <li>

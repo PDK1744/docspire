@@ -21,6 +21,7 @@ import {
   Key,
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import Account from "../subscription-plans/account/account";
 
 export default function CompanySettings({ companyId }) {
   const [user, setUser] = useState(null);
