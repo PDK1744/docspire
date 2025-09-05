@@ -198,12 +198,13 @@ export const createCompanyAction = async (formData) => {
     const { data: company, error: companyError } = await supabase
         .from("companies")
         .insert([
-            { name: companyName, owner_id: user.id }
+            { name: companyName, owner_id: user.id, subscription_status: 'NOT_SUBSCRIBED', subscription_plan: 'FREE'}
         ])
         .select()
         .single();
 
     if (companyError) {
+        console.error(companyError.message);
         return encodedRedirect("error", "/onboarding", "Failed to create company. Please try again.");
     }
 
@@ -222,5 +223,5 @@ export const createCompanyAction = async (formData) => {
         );
     }
 
-    return encodedRedirect("success", "/dashboard", "Company created successfully!");
+    return { success: true };
 }

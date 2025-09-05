@@ -2,29 +2,43 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { createCompanyAction } from "@/app/actions";
-import { createClient } from "@/utils/supabase/client";
+import { fi } from "zod/v4/locales/index.cjs";
+import { set } from "zod";
+import OnboardPricing from "@/components/subscription-plans/onboard-pricing";
+
 
 export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [choice, setChoice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [companyCreated, setCompanyCreated] = useState(false);
+  const [plans, setPlans] = useState([]);
   const router = useRouter();
-  //   const supabase = createClient()
+
+  
+
+  const handleCreateCompany = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData(e.target);
+      const result = await createCompanyAction(formData);
+
+      setCompanyCreated(true);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  
 
   const handleJoinCompany = async (code) => {
     setLoading(true);
@@ -56,6 +70,9 @@ export default function OnboardingPage() {
   const handleNext = () => {
     setStep(2);
   };
+  const handleContinueToSubscription = () => {
+    setStep(3);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
@@ -72,16 +89,27 @@ export default function OnboardingPage() {
             <h2 className="card-title text-2xl text-center">
               {step === 1
                 ? "Get Started"
-                : choice === "create"
-                ? "Create Company"
-                : "Join Company"}
+                : step === 2 && choice === "create"
+                ? companyCreated ? "Company Created!" : "Create Your Company"
+                : step === 2 && choice === "join"
+                ? "Join a Company"
+                : step === 3
+                ? "Choose Your Plan"
+                : "Get Started"}
             </h2>
             <p className="text-center text-base-content/70 text-sm">
               {step === 1
                 ? "Are you creating a new company or joining an existing one?"
-                : choice === "create"
-                ? "Give your company a name to get started."
-                : "Enter your company’s invite code to join."}
+                : step === 2 && choice === "create"
+                ? companyCreated
+                ? "Your company has been created successfully! Ready to continue?"
+                : "Enter your company name to get started."
+                : step === 2 && choice === "join"
+                ? "Enter the company code provided by your administrator."
+                : step === 3
+                ? "Select a subscription plan that fits your needs."
+                : ""
+              }
             </p>
           </div>
 
@@ -116,7 +144,7 @@ export default function OnboardingPage() {
 
           {/* Step 2 - Create company */}
           {step === 2 && choice === "create" && (
-            <form action={createCompanyAction} className="space-y-3">
+            <form onSubmit={handleCreateCompany} className="space-y-3">
               <div className="form-control">
                 <label className="label" htmlFor="companyName">
                   <span className="label-text">Company Name</span>
@@ -125,12 +153,22 @@ export default function OnboardingPage() {
                   id="companyName"
                   name="companyName"
                   required
+                  disabled={loading || companyCreated}
                   className="input input-bordered w-full"
                 />
               </div>
-              <button type="submit" className="btn btn-primary w-full">
-                Create Company
-              </button>
+              {error && <p className="text-error text-sm mt-1">{error}</p>}
+
+              {!companyCreated ? (
+                <button type="submit" disabled={loading} className="btn btn-primary w-full">
+                  {loading ? "Creating..." : "Create Company"}
+                </button>
+              ) : (
+                <button type="button" onClick={handleContinueToSubscription} className="btn btn-primary w-full">
+                  Continue
+                </button>
+              )}
+              
             </form>
           )}
 
@@ -161,6 +199,11 @@ export default function OnboardingPage() {
                 {loading ? "Joining..." : "Join Company"}
               </button>
             </form>
+          )}
+
+          {/* Step 3 - Subscription plans */}
+          {step === 3 && (
+            <OnboardPricing />
           )}
 
           {/* Footer */}
