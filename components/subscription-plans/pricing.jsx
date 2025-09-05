@@ -25,12 +25,12 @@ export default function Pricing() {
       body: JSON.stringify({ priceId }),
     }).then((res) => res.json());
 
-    console.log("Checkout Session Response:", sessionId);
+    
 
     const result = await stripe.redirectToCheckout({ sessionId });
-    // if (result.error) {
-    //   console.error(result.error.message);
-    // }
+    if (result.error) {
+      console.error(result.error.message);
+    }
   };
 
   return (
